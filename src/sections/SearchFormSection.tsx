@@ -1,11 +1,11 @@
-import { startTransition, useCallback, useDeferredValue, useState } from 'react';
-
+import { lazy, startTransition, useCallback, useDeferredValue, useState } from 'react';
 import useDebounceValue from '@/core/hooks/useDebounceValue';
 
 import DynamicSearchBar from '@/features/Circle/components/DynamicSearchBar';
-import SearchResult from '@/features/Circle/components/SearchResult';
 import { useSearchForm } from '@/features/Circle/contexts/SearchFormContext';
 import { APP_DRAWER_ID, useAppDrawer } from '@/features/Drawers/hooks/useAppDrawer';
+
+const SearchResult = lazy(() => import('@/features/Circle/components/SearchResult'));
 
 function SearchFormSection() {
   const [keyword, setKeyword] = useState('');
@@ -26,7 +26,6 @@ function SearchFormSection() {
     startTransition(() => {
       setIsOpen(true);
     });
-
     closeDrawer(APP_DRAWER_ID.CIRCLE_DETAIL);
   }, [closeDrawer, setIsOpen]);
 

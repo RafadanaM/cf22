@@ -1,12 +1,23 @@
+import { lazy, Suspense } from 'react';
+
 import Section from '@/shared/components/Section';
-import RestoreSyncCard from '@/features/Bookmark/components/RestoreSyncCard';
-import UploadSyncCard from '@/features/Bookmark/components/UploadSyncCard';
+
+const RestoreSyncCard = lazy(
+  () => import('@/features/Bookmark/components/RestoreSyncCard')
+);
+const UploadSyncCard = lazy(
+  () => import('@/features/Bookmark/components/UploadSyncCard')
+);
 
 function SyncSection() {
   return (
     <Section title="Sync Bookmark">
-      <UploadSyncCard />
-      <RestoreSyncCard />
+      <Suspense>
+        <UploadSyncCard />
+      </Suspense>
+      <Suspense>
+        <RestoreSyncCard />
+      </Suspense>
     </Section>
   );
 }
