@@ -15,9 +15,12 @@ function DrawerContainer({ children, close }: PropsWithChildren<DrawerProps>) {
 
   const handleDragEnd = useCallback(
     (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      console.log({ info: info });
       if (info.offset.y > CLOSE_THRESHOLD || info.velocity.y > VELOCITY_THRESHOLD) {
+        console.log('CLOSE');
         close?.();
       } else {
+        console.log('ANIMATE');
         animate(y, 0);
       }
     },

@@ -11,8 +11,8 @@ interface SeeBookmarkNoteDrawerProps extends DrawerProps {
 function SeeBookmarkNoteDrawer({ note, circle, close }: SeeBookmarkNoteDrawerProps) {
   return (
     <Drawer close={close}>
-      <Drawer.Header className="flex gap-2">
-        <h2 className="text-xl font-semibold">{`${circle.name} Note`}</h2>
+      <Drawer.Header className="flex gap-2 pb-2">
+        <h2 className="text-xl font-semibold capitalize">{`${circle.name} Note`}</h2>
       </Drawer.Header>
 
       <Drawer.Body className="flex flex-col gap-2 border-t border-border">

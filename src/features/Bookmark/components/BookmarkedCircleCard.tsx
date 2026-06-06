@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 
-import BookmarkCard from '@/features/Bookmark/components/BookmarkCard';
 import { Circle } from '@/domain/circle/types';
+import BookmarkCard from '@/features/bookmark/components/BookmarkCard';
 
 import CircleCard from '@/features/search/components/CircleCard';
 

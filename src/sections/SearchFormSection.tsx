@@ -1,6 +1,6 @@
 import { lazy, startTransition, useCallback, useDeferredValue, useState } from 'react';
-
 import useDebounceValue from '@/core/hooks/useDebounceValue';
+
 import DynamicSearchBar from '@/features/search/components/DynamicSearchBar';
 import { useSearchForm } from '@/features/search/contexts/SearchFormProvider';
 import { APP_DRAWER_ID, useAppDrawer } from '@/layout/drawers/useAppDrawer';

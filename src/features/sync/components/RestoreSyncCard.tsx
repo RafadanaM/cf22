@@ -12,8 +12,8 @@ import { Spinner } from '@/core/ui/components/spinner';
 
 import { startTransition } from 'react';
 import { useToast } from '@/core/ui/components/toast/ToastProvider';
-import { useBookmarkForm } from '@/features/Bookmark/contexts/BookmarkFormProvider';
-import useRestoreBookmarkAPI from '@/features/Bookmark/hooks/useRestoreBookmarkAPI';
+import { useBookmarkForm } from '@/features/bookmark/contexts/BookmarkFormProvider';
+import useRestoreBookmarkAPI from '@/features/bookmark/hooks/useRestoreBookmarkAPI';
 
 interface FormFields {
   syncCode: string;

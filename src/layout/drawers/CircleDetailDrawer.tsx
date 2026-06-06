@@ -17,8 +17,8 @@ import { DrawerProps } from '@/core/ui/components/drawer/DrawerProvider';
 
 import { Circle, SocialMediaDetail, SocialMediaKind } from '@/domain/circle/types';
 
-import BookmarkButton from '@/features/Bookmark/components/BookmarkButton';
 import { attendingDaysToString } from '@/domain/circle/utils';
+import BookmarkButton from '@/features/bookmark/components/BookmarkButton';
 
 interface CircleDetailDrawerProps extends DrawerProps {
   circle: Circle;

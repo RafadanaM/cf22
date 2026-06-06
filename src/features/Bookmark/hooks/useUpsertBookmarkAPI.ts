@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
-import { UserBookmark } from '../types/bookmark';
 import upsertBookmarkAPI from '../api/upsertBookmarkAPI';
+import { UserBookmark } from '../types/bookmark';
 
 function useUpsertBookmarkAPI() {
   const mutationFn = useCallback(

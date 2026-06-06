@@ -2,8 +2,8 @@ import { nanoid } from 'nanoid';
 import { PropsWithChildren, useDeferredValue, useEffect, useMemo } from 'react';
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
 
-import { BookmarkDetail, UserBookmark } from '../types/bookmark';
 import { CircleId } from '@/domain/circle/types';
+import { BookmarkDetail, UserBookmark } from '../types/bookmark';
 
 import { saveLocalBookmark, getLocalBookmark } from '../utils/bookmark';
 

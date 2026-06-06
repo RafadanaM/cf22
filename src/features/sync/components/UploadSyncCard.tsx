@@ -12,10 +12,10 @@ import {
 import { Spinner } from '@/core/ui/components/spinner';
 import { useToast } from '@/core/ui/components/toast/ToastProvider';
 
-import { UserBookmark } from '@/features/Bookmark/types/bookmark';
+import { UserBookmark } from '@/features/bookmark/types/bookmark';
 
-import { useBookmarkForm } from '@/features/Bookmark/contexts/BookmarkFormProvider';
-import useUpsertBookmarkAPI from '@/features/Bookmark/hooks/useUpsertBookmarkAPI';
+import { useBookmarkForm } from '@/features/bookmark/contexts/BookmarkFormProvider';
+import useUpsertBookmarkAPI from '@/features/bookmark/hooks/useUpsertBookmarkAPI';
 
 function UploadSyncCard() {
   const { control } = useBookmarkForm();

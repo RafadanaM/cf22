@@ -10,6 +10,7 @@ export type DrawerComponents<Id extends DrawerId> = Record<Id, DrawerComponent<a
 export type DrawerRegistry<Components extends DrawerComponents<DrawerId>> = {
   registerDrawer<K extends keyof Components>(id: K, component: Components[K]): void;
   getDrawer<K extends keyof Components>(id: K): Components[K] | undefined;
+  getAllDrawers(): Map<keyof Components, Components[keyof Components]>;
 };
 
 export function createDrawerRegistry<
@@ -26,8 +27,13 @@ export function createDrawerRegistry<
     return registry.get(id) as Components[K] | undefined;
   }
 
+  function getAllDrawers() {
+    return registry;
+  }
+
   return {
     getDrawer,
-    registerDrawer
+    registerDrawer,
+    getAllDrawers
   };
 }

@@ -2,11 +2,11 @@ import { ClientOnly } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
 import { Spinner } from '@/core/ui/components/spinner';
-import NavigationTab from '@/layout/navigation/NavigationTab';
 import { useNavigationTab } from '@/layout/navigation/navigation';
+import NavigationTab from '@/layout/navigation/NavigationTab';
 
-import DayFilter from '@/features/Map/components/DayFilter';
-import ExpoMap from '@/features/Map/components/ExpoMap';
+import DayFilter from '@/features/map/components/DayFilter';
+import ExpoMap from '@/features/map/components/ExpoMap';
 
 import BookmarkSection from '@/layout/sections/BookmarkSection';
 import SearchFormSection from '@/layout/sections/SearchFormSection';

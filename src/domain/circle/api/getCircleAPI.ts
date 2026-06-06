@@ -1,7 +1,6 @@
-import appAPIClient from '@/core/apiClient/appApiClient';
-import { Result } from '@/core/apiClient/types';
-
-import { NormalizedCircles } from './normalizedTypes';
+import appAPIClient from '@/core/api/client';
+import { Result } from '@/core/api/types';
+import { NormalizedCircles } from '../types';
 
 async function getCircleAPI(): Promise<Result<NormalizedCircles>> {
   return appAPIClient.get<NormalizedCircles>('/api/v1/circles');

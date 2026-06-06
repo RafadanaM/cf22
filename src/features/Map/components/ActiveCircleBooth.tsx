@@ -1,9 +1,9 @@
 import { Pane } from 'react-leaflet/Pane';
 import { SVGOverlay } from 'react-leaflet/SVGOverlay';
 
+import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 import { useActiveCircle } from '../contexts/ActiveCircleProvider';
 import { useCircleFilter } from '../contexts/CircleFilterProvider';
-import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 
 import { bounds, MAP_HEIGHT, MAP_WIDTH } from '../constants/map';
 import BoothRectangle from './BoothRectangle';

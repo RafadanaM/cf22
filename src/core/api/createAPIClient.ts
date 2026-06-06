@@ -11,8 +11,6 @@ const createAPIClient = (baseURL: string) => {
   ): Promise<Result<TResponse>> {
     const { params, ...init } = config;
 
-    // Ensure path joins correctly with baseURL
-    // This handles cases where baseURL has a trailing slash or path has a leading one
     const normalizedBase = baseURL.replace(/\/$/, '');
     const normalizedPath = path.replace(/^\//, '');
     const url = new URL(`${normalizedBase}/${normalizedPath}`);
@@ -43,7 +41,6 @@ const createAPIClient = (baseURL: string) => {
     return { ok: true, data, error: null };
   }
 
-  // 3. Return the verb-specific methods
   return {
     get: <TResponse>(path: string, config?: HttpRequestConfig) =>
       http<TResponse>(path, { ...config, method: 'GET' }),

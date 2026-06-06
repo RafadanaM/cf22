@@ -1,14 +1,11 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "eslint",
-    "unicorn",
-    "typescript",
-    "react",
-    "react-perf",
-    "oxc",
-    "import",
-    "jsdoc"
+  "plugins": ["eslint", "typescript", "react", "react-perf", "oxc", "import"],
+  "jsPlugins": [
+    {
+      "name": "import-js",
+      "specifier": "eslint-plugin-import"
+    }
   ],
   "categories": {
     "correctness": "error",
@@ -19,13 +16,26 @@
 
     "typescript/no-explicit-any": "warn",
     "typescript/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "eslint-plugin-react-hooks/exhaustive-deps": "warn",
-    "react/react-in-jsx-scope": "off",
 
-    "unicorn/no-process-exit": "error",
-    "import/no-cycle": "error"
+    "eslint-plugin-react-hooks/exhaustive-deps": "warn",
+
+    "react/react-in-jsx-scope": "off",
+    "react/exhaustive-deps": "warn",
+    "react/jsx-key": "warn",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-target-blank": "error",
+
+    "import-js/no-unresolved": "error",
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/default": "error",
+
+    "jsx-no-new-array-as-prop": "warn"
   },
   "settings": {
+    "import/resolver": {
+      "typescript": true
+    },
     "jsx-a11y": {
       "polymorphicPropName": null,
       "components": {},

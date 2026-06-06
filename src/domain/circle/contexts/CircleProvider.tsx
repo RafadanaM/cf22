@@ -7,9 +7,8 @@ import {
   useMemo
 } from 'react';
 
+import getCircleAPI from '../api/getCircleAPI';
 import { Circle, CircleId } from '../types';
-
-import getCircleAPI from '../api';
 
 interface CircleContextValue {
   circles: Circle[];

@@ -46,3 +46,8 @@ type BoothRect = {
     | 'SPECIAL_HORIZONTAL'
     | 'A_Z_HORIZONTAL';
 };
+
+export type NormalizedCircles = {
+  circles: Circle[];
+  fandoms: string[];
+};

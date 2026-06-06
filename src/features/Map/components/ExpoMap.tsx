@@ -25,7 +25,7 @@ function ExpoMap() {
             crs={L.CRS.Simple}
             bounds={bounds}
             maxBounds={bounds}
-            style={{ width: '100vw', height: '100vh' }}
+            className="w-screen h-screen"
             minZoom={-1.5}
             maxZoom={2}
             zoomControl={false}

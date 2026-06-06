@@ -6,18 +6,18 @@ import { Button } from '@/core/ui/components/button';
 import { cn } from '@/core/ui/utils';
 import { interactionResponse } from '@/core/utils/scheduler';
 
-import { useNavigationTab } from '@/layout/navigation/navigation';
 import { Circle } from '@/domain/circle/types';
+import { useNavigationTab } from '@/layout/navigation/navigation';
 
-import BookmarkButton from '@/features/Bookmark/components/BookmarkButton';
+import BookmarkButton from '@/features/bookmark/components/BookmarkButton';
+import { useMapControl } from '@/features/map/contexts/MapProvider';
+import { boothToBounds } from '@/features/map/utils/map';
 import { APP_DRAWER_ID, useAppDrawer } from '@/layout/drawers/useAppDrawer';
-import { useMapControl } from '@/features/Map/contexts/MapProvider';
-import { boothToBounds } from '@/features/Map/utils/map';
 
-import { useActiveCircle } from '@/features/Map/contexts/ActiveCircleProvider';
-import { useCircleFilter } from '@/features/Map/contexts/CircleFilterProvider';
-import { useSearchForm } from '@/features/search/contexts/SearchFormProvider';
 import { attendingDaysToString } from '@/domain/circle/utils';
+import { useActiveCircle } from '@/features/map/contexts/ActiveCircleProvider';
+import { useCircleFilter } from '@/features/map/contexts/CircleFilterProvider';
+import { useSearchForm } from '@/features/search/contexts/SearchFormProvider';
 
 interface CircleCardProps {
   style?: CSSProperties;

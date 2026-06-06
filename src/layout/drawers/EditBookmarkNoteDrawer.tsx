@@ -7,8 +7,8 @@ import { Field, FieldLabel } from '@/core/ui/components/field';
 import { Textarea } from '@/core/ui/components/textarea';
 import { interactionResponse } from '@/core/utils/scheduler';
 
-import { useBookmarkForm } from '@/features/Bookmark/contexts/BookmarkFormProvider';
 import { Circle } from '@/domain/circle/types';
+import { useBookmarkForm } from '@/features/bookmark/contexts/BookmarkFormProvider';
 
 interface EditBookmarkNoteDrawerProps extends DrawerProps {
   circle: Circle;

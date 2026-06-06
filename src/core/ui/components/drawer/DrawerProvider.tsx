@@ -14,7 +14,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import Drawer from './Drawer';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { DrawerComponents, DrawerId, DrawerRegistry } from './DrawerRegistry';
 
 type DrawerContextValue<Id extends DrawerId, Props> = {
@@ -46,65 +46,102 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 }: PropsWithChildren<DrawerProviderProps<Components>>) {
   const [mounted, setMounted] = useState(false);
   const [trays, setDrawers] = useState<DrawerInstance<Id, Components>[]>([]);
+  const navigate = useNavigate();
+  const { hash } = useLocation();
+
+  const currentHash = hash;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const drawerIds = useMemo(() => {
+    const set = new Set<Id>();
+
+    for (let key of registry.getAllDrawers().keys()) {
+      set.add(key as Id);
+    }
+    return set;
+  }, [registry]);
+
   const openDrawer = useCallback(
     (id: Id, props?: ComponentProps<Components[Id]>, hideOverlay?: boolean) => {
-      let nextStack: DrawerInstance<Id, Components>[] = [];
+      let shouldNavigate = true;
       setDrawers((prevDrawers) => {
         const nextDrawers = [
           ...prevDrawers.filter((drawer) => drawer.id !== id),
           { id, props: props ?? ({} as ComponentProps<Components[Id]>), hideOverlay }
         ];
 
-        nextStack = nextDrawers;
+        if (prevDrawers.length === nextDrawers.length) {
+          shouldNavigate = false;
+        }
 
         return nextDrawers;
       });
 
-      window.history.pushState({ stack: nextStack }, '', `#${id}`);
+      if (!shouldNavigate) return;
+      navigate({
+        hash: id
+      });
     },
-    []
+    [navigate]
   );
 
-  const closeDrawer = useCallback((id: Id) => {
-    let nextStack: DrawerInstance<Id, Components>[] = [];
-    let nextHash: string = '';
-    setDrawers((prevDrawers) => {
-      const nextDrawers = prevDrawers.filter((tray) => tray.id !== id);
-      const topId = nextDrawers.length ? nextDrawers[nextDrawers.length - 1] : undefined;
+  const closeDrawer = useCallback(
+    (id: Id) => {
+      let nextHash: undefined | string;
+      setDrawers((prevDrawers) => {
+        const nextDrawers = prevDrawers.filter((tray) => tray.id !== id);
+        nextHash = nextDrawers.length
+          ? nextDrawers[nextDrawers.length - 1]?.id
+          : undefined;
 
-      const hash = topId ? `#${topId}` : '';
+        return nextDrawers;
+      });
+      navigate({
+        hash: nextHash,
+        replace: true
+      });
+    },
+    [navigate]
+  );
 
-      nextStack = nextDrawers;
-      nextHash = hash;
+  const closeTopDrawer = useCallback(() => {
+    let newHash: string | undefined = undefined;
+    setDrawers((prev) => {
+      if (prev.length === 0) return prev;
+
+      const nextDrawers = prev.slice(0, -1);
+      newHash = nextDrawers[nextDrawers.length - 1]?.id;
 
       return nextDrawers;
     });
-    window.history.replaceState({ stack: nextStack }, '', nextHash);
-  }, []);
 
-  const closeTopDrawer = useCallback(() => {
-    window.history.back();
-  }, []);
+    navigate({
+      hash: newHash,
+      replace: true
+    });
+  }, [navigate]);
 
   useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      if (event?.state?.stack) {
-        setDrawers(event.state.stack as DrawerInstance<Id, Components>[]);
-      } else {
-        setDrawers(prev => prev.length > 0 ? [] : prev);
-      }
-    };
+    if (!currentHash) {
+      setDrawers((prev) => (prev.length ? [] : prev));
+      return;
+    }
 
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
+    if (!drawerIds.has(currentHash as Id)) return;
+
+    if (currentHash) {
+      // only update state when go back, opening may require props
+      setDrawers((prev) => {
+        const idx = prev.findIndex((d) => d.id === 'currentHash');
+        if (idx === -1) return prev;
+
+        return prev.slice(0, idx + 1);
+      });
+    }
+  }, [currentHash, drawerIds]);
 
   const values = useMemo(
     () => ({

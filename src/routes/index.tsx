@@ -3,18 +3,18 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import DrawerProvider from '@/core/ui/components/drawer/DrawerProvider';
 
+import queryClient from '@/core/config/queryClient';
 import MainLayout from '@/layout/MainLayout';
 import { NavigationTabProvider } from '@/layout/navigation/navigation';
-import queryClient from '@/core/config/queryClient';
 
 import ToastProvider from '@/core/ui/components/toast/ToastProvider';
-import BookmarkFormProvider from '@/features/Bookmark/contexts/BookmarkFormProvider';
-import ActiveCircleProvider from '@/features/Map/contexts/ActiveCircleProvider';
-import CircleFilterProvider from '@/features/Map/contexts/CircleFilterProvider';
 import CircleProvider from '@/domain/circle/contexts/CircleProvider';
+import BookmarkFormProvider from '@/features/bookmark/contexts/BookmarkFormProvider';
+import ActiveCircleProvider from '@/features/map/contexts/ActiveCircleProvider';
+import CircleFilterProvider from '@/features/map/contexts/CircleFilterProvider';
+import MapProvider from '@/features/map/contexts/MapProvider';
 import SearchFormProvider from '@/features/search/contexts/SearchFormProvider';
 import { appDrawerRegistry } from '@/layout/drawers/useAppDrawer';
-import MapProvider from '@/features/Map/contexts/MapProvider';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent

@@ -1,4 +1,4 @@
-import appAPIClient from '@/core/apiClient/appApiClient';
+import appAPIClient from '@/core/api/client';
 
 import { UserBookmark } from '../types/bookmark';
 

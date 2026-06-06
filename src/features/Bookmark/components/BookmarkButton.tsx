@@ -31,31 +31,27 @@ function BookmarkButton({ circleId, size = 'icon' }: BookmarkButtonProps) {
     const bookmarks = getValues('bookmarks');
 
     if (isBookmarked) {
-      startTransition(() => {
-        setValue(
-          'bookmarkedCircleIds',
-          bookmarkedCircleIds.filter((id) => id !== circleId)
-        );
-        // oxlint-disable-next-line no-unused-vars
-        const { [circleId]: _, ...filteredRecord } = bookmarks;
-        setValue(`bookmarks`, filteredRecord);
-      });
+      setValue(
+        'bookmarkedCircleIds',
+        bookmarkedCircleIds.filter((id) => id !== circleId)
+      );
+      // oxlint-disable-next-line no-unused-vars
+      const { [circleId]: _, ...filteredRecord } = bookmarks;
+      setValue(`bookmarks`, filteredRecord);
     } else {
-      startTransition(() => {
-        setValue('bookmarkedCircleIds', [...bookmarkedCircleIds, circleId]);
-        setValue(`bookmarks.${circleId}`, {
-          id: circleId,
-          isComplete: false,
-          note: ''
-        });
+      setValue('bookmarkedCircleIds', [...bookmarkedCircleIds, circleId]);
+      setValue(`bookmarks.${circleId}`, {
+        id: circleId,
+        isComplete: false,
+        note: ''
       });
     }
 
-    await interactionResponse();
-
-    showToast({
-      title: isBookmarked ? 'Circle Removed from Bookmark' : 'Circle Added to Bookmark',
-      description: 'Check your bookmark page'
+    startTransition(() => {
+      showToast({
+        title: isBookmarked ? 'Circle Removed from Bookmark' : 'Circle Added to Bookmark',
+        description: 'Check your bookmark page'
+      });
     });
   };
 
