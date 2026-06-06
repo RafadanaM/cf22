@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Circle } from '@/shared/types/circle';
+import { Circle } from '@/domain/circle/types';
 
 interface CircleCodeTextProps {
   circle: Circle;

@@ -5,10 +5,10 @@ import { useWatch } from 'react-hook-form';
 
 import { Badge } from '@/core/ui/components/badge';
 import { Button } from '@/core/ui/components/button';
-import { BookmarkDetail } from '@/shared/types/bookmark';
-import { Circle } from '@/shared/types/circle';
+import { BookmarkDetail } from '../types/bookmark';
+import { Circle } from '@/domain/circle/types';
 
-import { useAppDrawer, APP_DRAWER_ID } from '@/features/Drawers/hooks/useAppDrawer';
+import { useAppDrawer, APP_DRAWER_ID } from '@/layout/drawers/useAppDrawer';
 
 import { useBookmarkForm } from '../contexts/BookmarkFormProvider';
 

@@ -1,5 +1,5 @@
 import { SVGOverlay } from 'react-leaflet/SVGOverlay';
-import { Circle } from '@/shared/types/circle';
+import { Circle } from '@/domain/circle/types';
 
 import { bounds, MAP_HEIGHT, MAP_WIDTH } from '../constants/map';
 import CircleCodeText from './CircleCodeText';

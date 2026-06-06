@@ -1,7 +1,7 @@
 import { Activity, memo, useDeferredValue } from 'react';
 
-import { useCircleFilter } from '@/features/Circle/contexts/CircleFilterProvider';
-import { useCircle } from '@/features/Circle/contexts/CircleProvider';
+import { useCircleFilter } from '../contexts/CircleFilterProvider';
+import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 
 import CircleBoothLabels from './CircleBoothLabels';
 import CircleBooths from './CircleBooths';

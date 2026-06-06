@@ -6,9 +6,9 @@ import {
 import { memo, startTransition, useMemo, useRef } from 'react';
 import { Rectangle } from 'react-leaflet/Rectangle';
 
-import { useActiveCircle } from '@/features/Circle/contexts/ActiveCircleProvider';
-import { useAppDrawer, APP_DRAWER_ID } from '@/features/Drawers/hooks/useAppDrawer';
-import { Circle } from '@/shared/types/circle';
+import { useActiveCircle } from '../contexts/ActiveCircleProvider';
+import { useAppDrawer, APP_DRAWER_ID } from '@/layout/drawers/useAppDrawer';
+import { Circle } from '@/domain/circle/types';
 
 import { boothToBounds } from '../utils/map';
 

@@ -5,7 +5,7 @@ import { useWatch } from 'react-hook-form';
 import { Button } from '@/core/ui/components/button';
 import { cn } from '@/core/ui/utils';
 
-import { CircleId } from '@/shared/types/circle';
+import { CircleId } from '@/domain/circle/types';
 
 import { useToast } from '@/core/ui/components/toast/ToastProvider';
 import { interactionResponse } from '@/core/utils/scheduler';

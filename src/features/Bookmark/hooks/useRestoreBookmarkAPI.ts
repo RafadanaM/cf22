@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
 import restoreBookmarkAPI from '../api/restoreBookmarkAPI';
-import { UserBookmark } from '../types/Bookmark';
+import { UserBookmark } from '../types/bookmark';
 
 function useRestoreBookmarkAPI() {
   const mutationFn = useCallback(async ({ id }: { id: string }) => {

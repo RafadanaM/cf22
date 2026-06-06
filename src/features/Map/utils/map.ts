@@ -1,6 +1,6 @@
 import L from 'leaflet';
 
-import { Circle } from '@/shared/types/circle';
+import { Circle } from '@/domain/circle/types';
 import { MAP_HEIGHT } from '../constants/map';
 
 export function boothToBounds(

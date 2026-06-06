@@ -1,4 +1,4 @@
-import { Circle } from '@/shared/types/circle';
+import { Circle } from '@/domain/circle/types';
 
 import BoothRectangle from './BoothRectangle';
 

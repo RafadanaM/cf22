@@ -3,9 +3,9 @@ import { startTransition, useEffect, useState } from 'react';
 
 import { cn } from '@/core/ui/utils';
 
-import { AttendingDay } from '@/shared/types/circle';
+import { AttendingDay } from '@/domain/circle/types';
 
-import { useCircleFilter } from '@/features/Circle/contexts/CircleFilterProvider';
+import { useCircleFilter } from '../contexts/CircleFilterProvider';
 
 function DayFilter() {
   const { attendingDay } = useCircleFilter();

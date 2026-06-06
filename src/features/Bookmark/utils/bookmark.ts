@@ -1,6 +1,6 @@
 import { createClientOnlyFn } from '@tanstack/react-start';
 
-import { UserBookmark } from '@/shared/types/bookmark';
+import { UserBookmark } from '../types/bookmark';
 
 import { BOOKMARK_STORAGE_ID } from '../constants/bookmark';
 

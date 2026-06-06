@@ -2,15 +2,15 @@ import { ClientOnly } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
 import { Spinner } from '@/core/ui/components/spinner';
-import NavigationTab from '@/shared/components/NavigationTab';
-import { useNavigationTab } from '@/shared/constants/navigation';
+import NavigationTab from '@/layout/navigation/NavigationTab';
+import { useNavigationTab } from '@/layout/navigation/navigation';
 
 import DayFilter from '@/features/Map/components/DayFilter';
 import ExpoMap from '@/features/Map/components/ExpoMap';
 
-import BookmarkSection from '@/sections/BookmarkSection';
-import SearchFormSection from '@/sections/SearchFormSection';
-import SyncSection from '@/sections/SyncSection';
+import BookmarkSection from '@/layout/sections/BookmarkSection';
+import SearchFormSection from '@/layout/sections/SearchFormSection';
+import SyncSection from '@/layout/sections/SyncSection';
 
 function MainLayout() {
   const { tab } = useNavigationTab();
