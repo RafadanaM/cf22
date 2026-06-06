@@ -39,7 +39,7 @@ function ToastProvider({ children }: PropsWithChildren<{}>) {
     });
   }, []);
 
-  const showToast = useCallback(({ timeoutMs = 5000, ...rest }: ToastConfig) => {
+  const showToast = useCallback(({ timeoutMs = 3000, ...rest }: ToastConfig) => {
     const id = nanoid();
 
     showToasts((prev) => [...prev, { ...rest, id, timeoutMs }]);
