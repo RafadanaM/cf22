@@ -21,7 +21,7 @@ const MotionInputGroup = motion.create(InputGroup);
 function SearchBar({ keyword, isFocused, onFocus, onChange }: SearchBarProps) {
   return (
     <MotionInputGroup
-      layout
+      layout="position"
       className={cn(
         'h-12 rounded-full bg-card pointer-events-auto',
         isFocused ? 'shadow-none' : 'shadow-xl'
