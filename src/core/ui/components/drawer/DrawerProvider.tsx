@@ -14,6 +14,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import Drawer from './Drawer';
 import { DrawerComponents, DrawerId, DrawerRegistry } from './DrawerRegistry';
 
 type DrawerContextValue<Id extends DrawerId, Props> = {
@@ -52,20 +53,57 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 
   const openDrawer = useCallback(
     (id: Id, props?: ComponentProps<Components[Id]>, hideOverlay?: boolean) => {
-      setDrawers((prevDrawers) => [
-        ...prevDrawers.filter((drawer) => drawer.id !== id),
-        { id, props: props ?? ({} as ComponentProps<Components[Id]>), hideOverlay }
-      ]);
+      let nextStack: DrawerInstance<Id, Components>[] = [];
+      setDrawers((prevDrawers) => {
+        const nextDrawers = [
+          ...prevDrawers.filter((drawer) => drawer.id !== id),
+          { id, props: props ?? ({} as ComponentProps<Components[Id]>), hideOverlay }
+        ];
+
+        nextStack = nextDrawers;
+
+        return nextDrawers;
+      });
+
+      window.history.pushState({ stack: nextStack }, '', `#${id}`);
     },
     []
   );
 
   const closeDrawer = useCallback((id: Id) => {
-    setDrawers((prevDrawers) => prevDrawers.filter((tray) => tray.id !== id));
+    let nextStack: DrawerInstance<Id, Components>[] = [];
+    let nextHash: string = '';
+    setDrawers((prevDrawers) => {
+      const nextDrawers = prevDrawers.filter((tray) => tray.id !== id);
+      const topId = nextDrawers.length ? nextDrawers[nextDrawers.length - 1] : undefined;
+
+      const hash = topId ? `#${topId}` : '';
+
+      nextStack = nextDrawers;
+      nextHash = hash;
+
+      return nextDrawers;
+    });
+    window.history.replaceState({ stack: nextStack }, '', nextHash);
   }, []);
 
   const closeTopDrawer = useCallback(() => {
-    setDrawers((prevDrawers) => prevDrawers.slice(0, prevDrawers.length - 1));
+    window.history.back();
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event?.state?.stack) {
+        setDrawers(event.state.stack as DrawerInstance<Id, Components>[]);
+      } else {
+        setDrawers(prev => prev.length > 0 ? [] : prev);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   const values = useMemo(
