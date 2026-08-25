@@ -1,6 +1,13 @@
-import { lazy, startTransition, useCallback, useDeferredValue, useState } from 'react';
+import {
+  lazy,
+  useCallback,
+  useMemo,
+  useState,
+  useTransition,
+  startTransition
+} from 'react';
 
-import useDebounceValue from '@/core/hooks/useDebounceValue';
+import { debounce } from '@/core/utils/scheduler';
 import DynamicSearchBar from '@/features/search/components/DynamicSearchBar';
 import { useSearchForm } from '@/features/search/contexts/SearchFormProvider';
 import { APP_DRAWER_ID, useAppDrawer } from '@/layout/drawers/useAppDrawer';
@@ -9,34 +16,55 @@ const SearchResult = lazy(() => import('@/features/search/components/SearchResul
 
 function SearchFormSection() {
   const [keyword, setKeyword] = useState('');
+  const [autocompleteKeyword, setAutocompleteKeyword] = useState('');
+  const [isPending, startKeywordTransition] = useTransition();
 
   const { isOpen, setIsOpen } = useSearchForm();
   const { closeDrawer } = useAppDrawer();
 
-  const [debouncedKeyword, isKeywordLoading] = useDebounceValue(keyword.trim());
-  const deferredKeyword = useDeferredValue(debouncedKeyword);
-
   const handleClose = useCallback(() => {
-    setIsOpen(false);
-
+    startTransition(() => {
+      setIsOpen(false);
+    });
     setKeyword('');
+    setAutocompleteKeyword('');
   }, [setIsOpen]);
 
   const handleFocus = useCallback(() => {
     startTransition(() => {
       setIsOpen(true);
     });
+
     closeDrawer(APP_DRAWER_ID.CIRCLE_DETAIL);
   }, [closeDrawer, setIsOpen]);
+
+  const handleAutocompleteKeywordChange = useMemo(() => {
+    return debounce((inputStr: string) => {
+      startKeywordTransition(() => {
+        setAutocompleteKeyword(inputStr);
+      });
+    });
+  }, []);
+
+  const handleKeywordChange = useCallback(
+    (inputStr: string) => {
+      setKeyword(inputStr);
+      handleAutocompleteKeywordChange(inputStr);
+    },
+    [handleAutocompleteKeywordChange]
+  );
 
   return (
     <>
       {isOpen && (
-        <div className="pointer-events-auto fixed top-0 bottom-0 left-0 right-0 bg-card-foreground/20 backdrop-blur-lg hidden md:block" />
+        <div
+          className="pointer-events-auto fixed top-0 bottom-0 left-0 right-0 bg-card-foreground/20 backdrop-blur-lg hidden md:block cursor-pointer"
+          onClick={handleClose}
+        />
       )}
       <DynamicSearchBar
         keyword={keyword}
-        onChange={setKeyword}
+        onChange={handleKeywordChange}
         isFocused={isOpen}
         onFocus={handleFocus}
         onClose={handleClose}
@@ -44,8 +72,8 @@ function SearchFormSection() {
       {isOpen && (
         <SearchResult
           key="search-result"
-          isLoading={isKeywordLoading}
-          keyword={deferredKeyword}
+          keyword={autocompleteKeyword}
+          isLoading={isPending}
         />
       )}
     </>

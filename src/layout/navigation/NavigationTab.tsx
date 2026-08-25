@@ -7,8 +7,11 @@ import { NAVIGATION_TABS, useNavigationTab } from './navigation';
 
 function NavigationTab() {
   return (
-    <nav className="overflow-hidden fixed bottom-3 w-3/5 max-w-96 min-w-72 mx-2 left-1/2 -translate-x-1/2 bg-card border border-border shadow-2xl rounded-full">
-      <ul className="flex items-center">
+    <nav
+      aria-label="Main Navigation"
+      className="overflow-hidden fixed bottom-3 w-3/5 max-w-96 min-w-72 mx-2 left-1/2 -translate-x-1/2 bg-card border border-border shadow-2xl rounded-full"
+    >
+      <ul role="tablist" className="flex items-center">
         {NAVIGATION_TABS.map((tab, idx) => (
           <TabButton key={tab} isLast={idx === NAVIGATION_TABS.length - 1} value={tab} />
         ))}
@@ -36,8 +39,15 @@ function TabButton({ value }: TabButton) {
 
   const isActive = tab === value;
   return (
-    <li className={cn('flex-1 relative flex justify-center items-center flex-col')}>
+    <li
+      role="presentation"
+      className={cn('flex-1 relative flex justify-center items-center flex-col')}
+    >
       <button
+        id={`tab-${value}`}
+        role="tab"
+        aria-selected={isActive}
+        aria-controls={`section-${value}`}
         className={cn(
           'flex items-center gap-1 capitalize font-semibold delay-150 px-1 py-2 cursor-pointer',
           isActive ? 'text-primary-foreground' : 'text-secondary-foreground',

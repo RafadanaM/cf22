@@ -7,8 +7,8 @@ import { Field, FieldLabel } from '@/core/ui/components/field';
 import { Textarea } from '@/core/ui/components/textarea';
 import { interactionResponse } from '@/core/utils/scheduler';
 
+import { useBookmarkActions } from '@/domain/bookmark/contexts/BookmarkFormProvider';
 import { Circle } from '@/domain/circle/types';
-import { useBookmarkForm } from '@/features/bookmark/contexts/BookmarkFormProvider';
 
 interface EditBookmarkNoteDrawerProps extends DrawerProps {
   circle: Circle;
@@ -26,12 +26,12 @@ function EditBookmarkNoteDrawer({ note, circle, close }: EditBookmarkNoteDrawerP
     }
   });
 
-  const { setValue } = useBookmarkForm();
+  const { updateNote } = useBookmarkActions();
 
   const onSubmit = async (data: EditBookmarkNote) => {
     close();
     await interactionResponse();
-    setValue(`bookmarks.${circle.id}.note`, data.note.trim());
+    updateNote(circle.id, data.note);
   };
 
   return (
@@ -39,7 +39,7 @@ function EditBookmarkNoteDrawer({ note, circle, close }: EditBookmarkNoteDrawerP
       <form onSubmit={handleSubmit(onSubmit)}>
         <Field>
           <Drawer.Header className="flex gap-2">
-            <h2 className="text-xl font-semibold">{`Edit ${circle.name}`}</h2>
+            <h2 className="text-xl font-semibold">{`${circle.name}`}</h2>
           </Drawer.Header>
 
           <Drawer.Body className="flex flex-col gap-2 border-t border-border">

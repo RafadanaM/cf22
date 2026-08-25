@@ -1,4 +1,5 @@
 import { RiDownloadCloud2Line, RiDownloadCloudLine, RiKeyFill } from '@remixicon/react';
+import { startTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/core/ui/components/button';
@@ -9,11 +10,9 @@ import {
   InputGroupInput
 } from '@/core/ui/components/input-group';
 import { Spinner } from '@/core/ui/components/spinner';
-
-import { startTransition } from 'react';
 import { useToast } from '@/core/ui/components/toast/ToastProvider';
-import { useBookmarkForm } from '@/features/bookmark/contexts/BookmarkFormProvider';
-import useRestoreBookmarkAPI from '@/features/bookmark/hooks/useRestoreBookmarkAPI';
+import { useBookmarkActions } from '@/domain/bookmark/contexts/BookmarkFormProvider';
+import useRestoreBookmarkAPI from '@/domain/bookmark/hooks/useRestoreBookmarkAPI';
 
 interface FormFields {
   syncCode: string;
@@ -31,7 +30,7 @@ function RestoreSyncCard() {
     mode: 'onChange'
   });
 
-  const { reset } = useBookmarkForm();
+  const { resetBookmark } = useBookmarkActions();
 
   const { isPending, mutate } = useRestoreBookmarkAPI();
   const { showToast } = useToast();
@@ -48,7 +47,7 @@ function RestoreSyncCard() {
           });
 
           startTransition(() => {
-            reset(result);
+            resetBookmark(result);
           });
         },
         onError: (e) => {
@@ -75,7 +74,7 @@ function RestoreSyncCard() {
               </FieldLabel>
               <FieldDescription className="text-sm text-muted-foreground">
                 {
-                  'Download you saved bookmark from another device by entering your unique sync code'
+                  'Download your saved bookmark from another device by entering your unique sync code'
                 }
               </FieldDescription>
             </div>

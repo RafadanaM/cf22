@@ -3,24 +3,26 @@ import { PropsWithChildren, useCallback, PointerEvent } from 'react';
 import { cn } from '../../utils';
 
 interface DrawerProps {
+  animateExit?: boolean;
   close?: () => void;
 }
 
 const CLOSE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 600;
 
-function DrawerContainer({ children, close }: PropsWithChildren<DrawerProps>) {
+function DrawerContainer({
+  children,
+  close,
+  animateExit = true
+}: PropsWithChildren<DrawerProps>) {
   const dragControls = useDragControls();
   const y = useMotionValue(0);
 
   const handleDragEnd = useCallback(
     (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-      console.log({ info: info });
       if (info.offset.y > CLOSE_THRESHOLD || info.velocity.y > VELOCITY_THRESHOLD) {
-        console.log('CLOSE');
         close?.();
       } else {
-        console.log('ANIMATE');
         animate(y, 0);
       }
     },
@@ -38,16 +40,20 @@ function DrawerContainer({ children, close }: PropsWithChildren<DrawerProps>) {
 
   return (
     <motion.div
-      className="bg-card flex flex-col pointer-events-auto fixed rounded-t-2xl bottom-0 left-0 right-0 max-h-[80vh] border-t border-border shadow-[5px_-4px_19px_5px_rgba(0,0,0,0.25)] md:right-auto md:left-1/2 md:-translate-x-1/2 md:w-md"
+      className="bg-card pointer-events-auto fixed rounded-t-2xl bottom-0 left-0 right-0 max-h-[80vh] border-t border-border shadow-[5px_-4px_19px_5px_rgba(0,0,0,0.25)] md:right-auto md:left-1/2 md:-translate-x-1/2 md:w-md"
       initial={{
         y: '100%'
       }}
       animate={{
         y: '0%'
       }}
-      exit={{
-        y: '100%'
-      }}
+      exit={
+        animateExit
+          ? {
+              y: '100%'
+            }
+          : undefined
+      }
       style={{
         y
       }}
@@ -70,6 +76,13 @@ function DrawerContainer({ children, close }: PropsWithChildren<DrawerProps>) {
       {children}
     </motion.div>
   );
+}
+
+interface DrawerContentProps {
+  className?: string;
+}
+function DrawerContent({ className, children }: PropsWithChildren<DrawerContentProps>) {
+  return <div className={cn('flex flex-col', className)}>{children}</div>;
 }
 
 interface DrawerHeaderProps {
@@ -108,6 +121,7 @@ function DrawerFooter({ className, children }: PropsWithChildren<DrawerFooterPro
 }
 
 const Drawer = Object.assign(DrawerContainer, {
+  Content: DrawerContent,
   Header: DrawerHeader,
   Body: DrawerBody,
   Footer: DrawerFooter

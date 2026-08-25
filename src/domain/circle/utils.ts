@@ -11,3 +11,17 @@ function getDayAmount(attendingDays: AttendingDay[]): string {
 
   return attendingDays.includes('SAT') ? '1' : '2';
 }
+
+export function attendingDaysToDays(attendingDays: AttendingDay[]): string[] {
+  const days: string[] = [];
+
+  if (attendingDays.includes('SAT')) {
+    days.push('saturday');
+  }
+
+  if (attendingDays.includes('SUN')) {
+    days.push('sunday');
+  }
+
+  return days;
+}

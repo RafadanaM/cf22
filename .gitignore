@@ -1,6 +1,8 @@
 # dependencies (bun install)
 node_modules
 
+public/sw.js
+
 # output
 out
 dist

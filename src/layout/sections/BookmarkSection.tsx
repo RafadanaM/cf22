@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useDeferredValue, useState } from 'react';
 
+import useDebounceValue from '@/core/hooks/useDebounceValue';
 import Section from '@/core/ui/components/section';
 
 const BookmarkProgress = lazy(
@@ -8,16 +9,34 @@ const BookmarkProgress = lazy(
 const BookmarkedCircleList = lazy(
   () => import('@/features/bookmark/components/BookmarkCircleList')
 );
+const BookmarkSearch = lazy(
+  () => import('@/features/bookmark/components/BookmarkSearch')
+);
 
 function BookmarkSection() {
+  const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword] = useDebounceValue(keyword.trim());
+
+  const deferredKeyword = useDeferredValue(debouncedKeyword);
+
   return (
-    <Section title="Bookmarked Circles">
+    <Section
+      id="section-BOOKMARKS"
+      role="tabpanel"
+      aria-labelledby="tab-BOOKMARKS"
+      title="Bookmarked Circles"
+    >
       <Suspense>
-        <BookmarkProgress />
+        <BookmarkSearch keyword={keyword} onChange={setKeyword} />
       </Suspense>
-      <Suspense>
-        <BookmarkedCircleList />
-      </Suspense>
+      <div className="overflow-y-auto space-y-2">
+        <Suspense>
+          <BookmarkProgress />
+        </Suspense>
+        <Suspense>
+          <BookmarkedCircleList keyword={deferredKeyword} />
+        </Suspense>
+      </div>
     </Section>
   );
 }

@@ -19,6 +19,7 @@ import { Circle, SocialMediaDetail, SocialMediaKind } from '@/domain/circle/type
 
 import { attendingDaysToString } from '@/domain/circle/utils';
 import BookmarkButton from '@/features/bookmark/components/BookmarkButton';
+import { useAppDrawer } from './useAppDrawer';
 
 interface CircleDetailDrawerProps extends DrawerProps {
   circle: Circle;
@@ -30,10 +31,11 @@ function CircleDetailDrawer({ circle, close }: CircleDetailDrawerProps) {
       <Drawer.Header className="flex gap-2">
         {circle.imageUrl ? (
           <img
+            src={circle.imageUrl}
+            alt="circle avatar"
             width={80}
             height={80}
             className="object-cover w-20 h-20 border border-muted-foreground overflow-hidden rounded-md"
-            src={circle.imageUrl}
           />
         ) : (
           <div className="h-20 w-20 rounded-md flex justify-center items-center bg-secondary border border-muted-foreground">
@@ -53,13 +55,22 @@ function CircleDetailDrawer({ circle, close }: CircleDetailDrawerProps) {
       </Drawer.Header>
 
       <Drawer.Body className="flex flex-col gap-4">
-        <ul className="grid grid-cols-4 gap-1 items-center">
+        <ul
+          role="list"
+          aria-label="social media links"
+          className="grid grid-cols-4 gap-1 items-center"
+        >
           {circle.socialMedias.map((socialMedia) => (
             <SocialMediaCard key={socialMedia.kind} socialMedia={socialMedia} />
           ))}
         </ul>
 
         <div className="flex flex-col gap-3">
+          {circle.sampleWorks.length > 0 && (
+            <DetailSection title="Sample Works">
+              <SampleWorks sampleWorks={circle.sampleWorks} />
+            </DetailSection>
+          )}
           <DetailSection title="Schedule">
             <Badge className="text-sm h-8 px-3 py-4">
               <RiCalendarCheckLine className="size-5" />
@@ -68,9 +79,13 @@ function CircleDetailDrawer({ circle, close }: CircleDetailDrawerProps) {
           </DetailSection>
 
           <DetailSection title="Fandom">
-            <ul className="flex gap-1 overflow-x-auto no-scrollbar">
+            <ul
+              role="list"
+              aria-label="fandom list"
+              className="flex gap-1 overflow-x-auto scrollbar-thin"
+            >
               {circle.fandoms.map((fandom) => (
-                <li key={fandom}>
+                <li role="listitem" key={fandom}>
                   <Badge
                     variant="outline"
                     className="capitalize text-sm h-8 px-3 py-4 border-primary text-primary"
@@ -82,10 +97,14 @@ function CircleDetailDrawer({ circle, close }: CircleDetailDrawerProps) {
             </ul>
           </DetailSection>
           <DetailSection title="Work Types">
-            <ul className="flex gap-1 overflow-x-auto no-scrollbar">
+            <ul
+              role="list"
+              aria-label="work types list"
+              className="flex gap-1 overflow-x-auto scrollbar-thin"
+            >
               {circle.workTypes.length === 0 && <span>{'-'}</span>}
               {circle.workTypes.map((fandom) => (
-                <li key={fandom}>
+                <li role="list-item" key={fandom}>
                   <Badge
                     variant="outline"
                     className="capitalize text-sm h-8 px-3 py-4 border-primary text-primary"
@@ -116,10 +135,56 @@ interface DetailSectionProps {
 
 function DetailSection({ title, children }: PropsWithChildren<DetailSectionProps>) {
   return (
-    <div className="flex flex-col gap-1">
-      <p className="font-medium">{title}</p>
+    <section className="flex flex-col gap-1">
+      <h4 className="font-medium">{title}</h4>
       {children}
-    </div>
+    </section>
+  );
+}
+
+interface SampleWorksProps {
+  sampleWorks: string[];
+}
+
+function SampleWorks({ sampleWorks }: SampleWorksProps) {
+  const { openDrawer } = useAppDrawer();
+
+  const handleClick = (key: string, idx: number) => {
+    openDrawer('SAMPLE_WORKS', {
+      hideOverlay: true,
+      works: sampleWorks,
+      startingItemKey: `${key}-${idx}`
+    });
+  };
+
+  return (
+    <ul
+      role="list"
+      aria-label="circle sample works"
+      className="flex gap-2 overflow-x-auto no-scrollbar"
+    >
+      {sampleWorks.map((sampleWorkUrl, idx) => (
+        <li
+          key={sampleWorkUrl}
+          role="listitem"
+          className="overflow-hidden shrink-0 size-16 rounded-md border-primary border-2"
+        >
+          <button
+            type="button"
+            onClick={() => handleClick(sampleWorkUrl, idx)}
+            className="cursor-pointer"
+          >
+            <img
+              src={sampleWorkUrl}
+              alt={`sample work ${idx + 1}`}
+              className="size-16 object-cover hover:brightness-75 active:brightness-75"
+              width={64}
+              height={64}
+            />
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 

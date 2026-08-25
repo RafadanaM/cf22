@@ -27,18 +27,19 @@ function SearchBar({ keyword, isFocused, onFocus, onChange }: SearchBarProps) {
         isFocused ? 'shadow-none' : 'shadow-xl'
       )}
     >
+      <InputGroupAddon className="pl-4">
+        <RiSearchLine className="size-6 text-primary" />
+      </InputGroupAddon>
+
       <InputGroupInput
         id="search-form"
         name="search-form"
         onFocus={onFocus}
-        placeholder="Search Circle Name"
+        placeholder="Search Circle Name, Location, and Fandom"
         autoComplete={'off'}
         value={keyword}
         onChange={(e) => onChange(e.target.value)}
       />
-      <InputGroupAddon className="pl-4">
-        <RiSearchLine className="size-6 text-primary" />
-      </InputGroupAddon>
 
       {isFocused && (
         <InputGroupAddon align="inline-end" className="pr-4">

@@ -7,7 +7,12 @@ const UploadSyncCard = lazy(() => import('@/features/sync/components/UploadSyncC
 
 function SyncSection() {
   return (
-    <Section title="Sync Bookmark">
+    <Section
+      id="section-SYNC"
+      role="tabpanel"
+      aria-labelledby="tab-SYNC"
+      title="Sync Bookmark"
+    >
       <Suspense>
         <UploadSyncCard />
       </Suspense>

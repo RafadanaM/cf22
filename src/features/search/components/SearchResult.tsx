@@ -1,13 +1,12 @@
-import Fuse, { FuseResult } from 'fuse.js/basic';
-import { motion } from 'motion/react';
+import uFuzzy from '@leeoniya/ufuzzy';
 import { memo, useDeferredValue, useMemo } from 'react';
 import { VList } from 'virtua';
 
 import { cn } from '@/core/ui/utils';
 
+import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 import { Circle } from '@/domain/circle/types';
 
-import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 import CircleCard from './CircleCard';
 
 interface SearchResultProps {
@@ -15,60 +14,66 @@ interface SearchResultProps {
   isLoading: boolean;
 }
 
+const uf = new uFuzzy({
+  intraMode: 1
+});
+
 function SearchResult({ keyword, isLoading }: SearchResultProps) {
-  const { circles } = useCircle();
+  const { circles, searchableCircles } = useCircle();
 
-  const fuse = useMemo(
-    () =>
-      new Fuse(circles, {
-        keys: ['name', 'code']
-      }),
-    [circles]
-  );
+  // holy shit ufuzzy is fkin fast
+  const result: Circle[] = useMemo(() => {
+    const query = keyword.trim();
+    if (!query) return circles;
 
-  const result = fuse.search(keyword);
+    const idxs = uf.filter(searchableCircles, query);
+
+    if (!idxs || idxs.length === 0) return [];
+
+    const info = uf.info(idxs, searchableCircles, query);
+
+    const order = uf.sort(info, searchableCircles, query);
+
+    return order.map((i) => circles[info.idx[i]!]!);
+  }, [circles, keyword, searchableCircles]);
 
   const deferredResult = useDeferredValue(result);
   const hasResult = deferredResult.length > 0;
 
+  const showLoading = isLoading || deferredResult !== result;
+  const showEmpty = !hasResult && keyword.length > 0;
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
       className={cn(
-        'fixed top-20 left-0 right-0 md:right-auto md:left-1/2 md:-translate-x-1/2  bg-secondary border-t border-boder origin-top overflow-auto md:w-full md:max-w-2xl h-full md:h-4/5'
+        'fixed top-20 left-0 right-0 bottom-0 md:bottom-auto overflow-hidden md:right-auto md:left-1/2 md:-translate-x-1/2  bg-secondary border-t border-boder origin-top md:w-full md:max-w-2xl md:h-4/5'
       )}
     >
-      {!hasResult && (
-        <div className="p-2">
-          <div
-            className={cn(
-              'p-2 rounded-lg gap-1.5',
-              isLoading || deferredResult !== result ? 'opacity-50' : 'opacity-100'
-            )}
-          >
-            <p className="text-center text-primary font-medium text-md">
-              {'Circle not found'}
-            </p>
+      <div className={cn('h-full', showLoading ? 'opacity-50' : 'opacity-100')}>
+        {showEmpty && (
+          <div className="p-2">
+            <div className={cn('p-2 rounded-lg gap-1.5')}>
+              <p className="text-center text-primary font-medium text-md">
+                {'Circle not found'}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
-      {hasResult && <CircleCards circlesResult={deferredResult} />}
-    </motion.div>
+        )}
+        {hasResult && <CircleCards circlesResult={deferredResult} />}
+      </div>
+    </div>
   );
 }
 
-export default SearchResult;
+export default memo(SearchResult);
 interface CircleCardsProps {
-  circlesResult: FuseResult<Circle>[];
+  circlesResult: Circle[];
 }
 
 const CircleCards = memo(({ circlesResult }: CircleCardsProps) => {
   return (
-    <VList role="list" data={circlesResult} style={{ padding: 2 }}>
-      {(circle) => (
-        <CircleCard key={circle.item.id} className="my-1.5 mx-2" circle={circle.item} />
-      )}
+    <VList role="list" className="p-2 scrollbar-thin" data={circlesResult}>
+      {(circle) => <CircleCard key={circle.id} className="my-1" circle={circle} />}
     </VList>
   );
 });

@@ -3,7 +3,7 @@ import { Result } from '@/core/api/types';
 import { NormalizedCircles } from '../types';
 
 async function getCircleAPI(): Promise<Result<NormalizedCircles>> {
-  return appAPIClient.get<NormalizedCircles>('/api/v1/circles');
+  return appAPIClient.get<NormalizedCircles>('/v1/circles');
 }
 
 export default getCircleAPI;

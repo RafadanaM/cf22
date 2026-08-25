@@ -11,9 +11,16 @@ const createAPIClient = (baseURL: string) => {
   ): Promise<Result<TResponse>> {
     const { params, ...init } = config;
 
-    const normalizedBase = baseURL.replace(/\/$/, '');
-    const normalizedPath = path.replace(/^\//, '');
-    const url = new URL(`${normalizedBase}/${normalizedPath}`);
+    // honestly dont need check window since it will be only called on client anyway
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+
+    const url = new URL(baseURL, origin);
+
+    const normalizedBasePath = url.pathname.replace(/\/$/, '');
+    const normalizedEndpoint = path.replace(/^\//, '');
+
+    url.pathname = `${normalizedBasePath}/${normalizedEndpoint}`;
 
     if (params) {
       Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]!));

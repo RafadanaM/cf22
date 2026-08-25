@@ -2,12 +2,11 @@ import { ClientOnly } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
 import { Spinner } from '@/core/ui/components/spinner';
+
+import ExpoMap from '@/features/map/components/ExpoMap';
+import MapConfigs from '@/features/map/components/MapConfigs/MapConfigs';
 import { useNavigationTab } from '@/layout/navigation/navigation';
 import NavigationTab from '@/layout/navigation/NavigationTab';
-
-import DayFilter from '@/features/map/components/DayFilter';
-import ExpoMap from '@/features/map/components/ExpoMap';
-
 import BookmarkSection from '@/layout/sections/BookmarkSection';
 import SearchFormSection from '@/layout/sections/SearchFormSection';
 import SyncSection from '@/layout/sections/SyncSection';
@@ -21,14 +20,16 @@ function MainLayout() {
         <ClientOnly fallback={<MapLoader />}>
           <ExpoMap />
         </ClientOnly>
-        {tab === 'BOOKMARKS' && <BookmarkSection />}
-        {tab === 'SYNC' && <SyncSection />}
       </main>
+      <MapConfigs />
+
+      {/* lazy the content inside instead of the section itself so it immediately appears when opened */}
+      <SearchFormSection />
+      {tab === 'BOOKMARKS' && <BookmarkSection />}
+      {tab === 'SYNC' && <SyncSection />}
       <Suspense>
         <NavigationTab />
       </Suspense>
-      {tab === 'MAP' && <DayFilter />}
-      {tab === 'MAP' && <SearchFormSection />}
     </div>
   );
 }

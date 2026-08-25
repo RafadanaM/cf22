@@ -5,7 +5,7 @@ import { cn } from '@/core/ui/utils';
 
 import { AttendingDay } from '@/domain/circle/types';
 
-import { useCircleFilter } from '../contexts/CircleFilterProvider';
+import { useCircleFilter } from '../../contexts/CircleFilterProvider';
 
 function DayFilter() {
   const { attendingDay } = useCircleFilter();
@@ -26,12 +26,14 @@ function DayFilter() {
   }, [attendingDay]);
 
   return (
-    <div className="fixed flex items-center gap-2 left-1/2 -translate-x-1/2 top-28">
-      <ul className="flex bg-card items-center gap-1.5 rounded-full border overflow-hidden shadow-xl">
-        <FilterButton value="SAT" localValue={localValue} setLocalValue={setLocalValue} />
-        <FilterButton value="SUN" localValue={localValue} setLocalValue={setLocalValue} />
-      </ul>
-    </div>
+    <ul
+      role="tablist"
+      aria-label="Expo day filter"
+      className="flex bg-card items-center gap-1.5 rounded-full border overflow-hidden shadow-xl"
+    >
+      <FilterButton value="SAT" localValue={localValue} setLocalValue={setLocalValue} />
+      <FilterButton value="SUN" localValue={localValue} setLocalValue={setLocalValue} />
+    </ul>
   );
 }
 
@@ -57,8 +59,11 @@ function FilterButton({ value, localValue, setLocalValue }: FilterButtonProps) {
   };
 
   return (
-    <li className="relative">
+    <li role="group" className="relative">
       <button
+        type="button"
+        aria-label={value === 'SAT' ? 'Filter Saturday' : 'Filter Sunday'}
+        aria-selected={isActive}
         className={cn(
           'relative text-sm font-semibold cursor-pointer px-3 py-1 bg-transparent z-10',
           isActive && 'text-white'

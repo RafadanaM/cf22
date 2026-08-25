@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   ComponentProps,
@@ -5,20 +6,29 @@ import {
   createContext,
   Fragment,
   PropsWithChildren,
+  startTransition,
   Suspense,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useLocation, useNavigate } from '@tanstack/react-router';
+import { Spinner } from '@/core/ui/components/spinner';
+
+import Drawer from './Drawer';
 import { DrawerComponents, DrawerId, DrawerRegistry } from './DrawerRegistry';
 
+interface DrawerOptions {
+  hideOverlay?: boolean;
+  onClose?: () => void;
+}
+
 type DrawerContextValue<Id extends DrawerId, Props> = {
-  openDrawer(id: Id, props: Props, hideOverlay?: boolean): void;
+  openDrawer(id: Id, props: Props, options?: DrawerOptions): void;
   closeDrawer(id: Id): void;
 };
 
@@ -33,7 +43,7 @@ export type DrawerProps = {
 type DrawerInstance<Id extends DrawerId, Components extends DrawerComponents<Id>> = {
   id: Id;
   props: Omit<ComponentProps<Components[Id]>, 'close'>;
-  hideOverlay?: boolean;
+  options?: DrawerOptions;
 };
 
 type DrawerProviderProps<Components extends DrawerComponents<DrawerId>> = {
@@ -48,6 +58,12 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
   const [trays, setDrawers] = useState<DrawerInstance<Id, Components>[]>([]);
   const navigate = useNavigate();
   const { hash } = useLocation();
+
+  const drawers = useRef(trays);
+
+  useEffect(() => {
+    drawers.current = trays;
+  }, [trays]);
 
   const currentHash = hash;
 
@@ -65,19 +81,21 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
   }, [registry]);
 
   const openDrawer = useCallback(
-    (id: Id, props?: ComponentProps<Components[Id]>, hideOverlay?: boolean) => {
+    (id: Id, props?: ComponentProps<Components[Id]>, options?: DrawerOptions) => {
       let shouldNavigate = true;
-      setDrawers((prevDrawers) => {
-        const nextDrawers = [
-          ...prevDrawers.filter((drawer) => drawer.id !== id),
-          { id, props: props ?? ({} as ComponentProps<Components[Id]>), hideOverlay }
-        ];
+      startTransition(() => {
+        setDrawers((prevDrawers) => {
+          const nextDrawers = [
+            ...prevDrawers.filter((drawer) => drawer.id !== id),
+            { id, props: props ?? ({} as ComponentProps<Components[Id]>), options }
+          ];
 
-        if (prevDrawers.length === nextDrawers.length) {
-          shouldNavigate = false;
-        }
+          if (prevDrawers.length === nextDrawers.length) {
+            shouldNavigate = false;
+          }
 
-        return nextDrawers;
+          return nextDrawers;
+        });
       });
 
       if (!shouldNavigate) return;
@@ -91,14 +109,25 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
   const closeDrawer = useCallback(
     (id: Id) => {
       let nextHash: undefined | string;
-      setDrawers((prevDrawers) => {
-        const nextDrawers = prevDrawers.filter((tray) => tray.id !== id);
-        nextHash = nextDrawers.length
-          ? nextDrawers[nextDrawers.length - 1]?.id
-          : undefined;
+      let closeFn: undefined | Function;
 
-        return nextDrawers;
-      });
+      const nextDrawers = drawers.current.reduce<DrawerInstance<Id, Components>[]>(
+        (acc, drawer) => {
+          if (drawer.id !== id) {
+            acc.push(drawer);
+          } else {
+            closeFn = drawer.options?.onClose;
+          }
+          return acc;
+        },
+        []
+      );
+      nextHash = nextDrawers.length ? nextDrawers[nextDrawers.length - 1]?.id : undefined;
+
+      if (closeFn) {
+        closeFn();
+      }
+
       navigate({
         hash: nextHash,
         replace: true
@@ -109,14 +138,20 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 
   const closeTopDrawer = useCallback(() => {
     let newHash: string | undefined = undefined;
+    let closeFn: undefined | Function;
     setDrawers((prev) => {
       if (prev.length === 0) return prev;
 
+      closeFn = prev.at(-1)?.options?.onClose;
       const nextDrawers = prev.slice(0, -1);
       newHash = nextDrawers[nextDrawers.length - 1]?.id;
 
       return nextDrawers;
     });
+
+    if (closeFn) {
+      closeFn();
+    }
 
     navigate({
       hash: newHash,
@@ -135,10 +170,12 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
     if (currentHash) {
       // only update state when go back, opening may require props
       setDrawers((prev) => {
-        const idx = prev.findIndex((d) => d.id === 'currentHash');
+        const idx = prev.findIndex((d) => d.id === currentHash);
         if (idx === -1) return prev;
 
-        return prev.slice(0, idx + 1);
+        const x = prev.slice(0, idx + 1);
+
+        return x;
       });
     }
   }, [currentHash, drawerIds]);
@@ -158,17 +195,19 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 
       {mounted &&
         createPortal(
-          <div id="drawer-root" className="pointer-events-none">
+          <div id="drawer-root" className="">
             <AnimatePresence>
               {trays.map((tray) => {
-                const DrawerComponent = registry.getDrawer(tray.id) as ComponentType<
+                const drawerData = registry.getDrawer(tray.id);
+
+                const DrawerComponent = drawerData?.component as ComponentType<
                   typeof tray.props
                 >;
                 if (!DrawerComponent) return null;
 
                 return (
                   <Fragment key={tray.id}>
-                    {!tray.hideOverlay && (
+                    {!tray.options?.hideOverlay && (
                       <motion.div
                         className="pointer-events-auto fixed top-0 bottom-0 left-0 right-0 bg-card-foreground/20 backdrop-blur-lg"
                         initial={{ opacity: 0 }}
@@ -177,11 +216,23 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
                         onClick={closeTopDrawer}
                       />
                     )}
-                    <Suspense fallback={null}>
+                    <Suspense
+                      fallback={
+                        typeof drawerData?.loader === 'undefined' ? (
+                          <DrawerLoader />
+                        ) : (
+                          drawerData.loader
+                        )
+                      }
+                    >
                       <DrawerComponent
                         key={tray.id}
                         {...tray.props}
-                        close={() => closeDrawer(tray.id)}
+                        close={() => {
+                          startTransition(() => {
+                            closeDrawer(tray.id);
+                          });
+                        }}
                       />
                     </Suspense>
                   </Fragment>
@@ -196,6 +247,16 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 }
 
 export default DrawerProvider;
+
+function DrawerLoader() {
+  return (
+    <Drawer animateExit={false}>
+      <Drawer.Body className="items-center py-10">
+        <Spinner className="size-10 text-border" />
+      </Drawer.Body>
+    </Drawer>
+  );
+}
 
 export function createUseDrawer<Components extends DrawerComponents<DrawerId>>() {
   return function useDrawer() {
@@ -214,16 +275,12 @@ export function createUseDrawer<Components extends DrawerComponents<DrawerId>>()
           ...args: IsEmptyObject<
             Omit<ComponentProps<Components[K]>, 'close'>
           > extends true
-            ? [props?: { hideOverlay?: boolean }]
-            : [
-                props: Omit<ComponentProps<Components[K]>, 'close'> & {
-                  hideOverlay?: boolean;
-                }
-              ]
+            ? [props?: DrawerOptions]
+            : [props: Omit<ComponentProps<Components[K]>, 'close'> & DrawerOptions]
         ) {
           const props = args[0] ?? {};
-          const { hideOverlay, ...componentProps } = props;
-          ctx.openDrawer(id, componentProps, hideOverlay ?? false);
+          const { hideOverlay, onClose, ...componentProps } = props;
+          ctx.openDrawer(id, componentProps, { hideOverlay, onClose });
         },
 
         closeDrawer<K extends Id>(id: K) {

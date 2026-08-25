@@ -19,5 +19,5 @@
     ]
   },
 
-  "ignorePatterns": ["node_modules", "/src/routeTree.gen.ts", "server.ts"]
+  "ignorePatterns": ["node_modules", "/src/routeTree.gen.ts", "server.ts", "public"]
 }

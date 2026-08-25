@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Outlet, createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
 
 import leafletStyles from 'leaflet/dist/leaflet.css?url';
+import useRegisterServiceWorker from '@/core/hooks/useRegisterServiceWorker';
 import appCss from '../styles.css?url';
 
 export const Route = createRootRoute({
@@ -29,8 +30,9 @@ export const Route = createRootRoute({
       }
     ],
     links: [
-      { rel: 'stylesheet', href: appCss },
       { rel: 'stylesheet', href: leafletStyles },
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'manifest', href: '/manifest.json' },
       {
         rel: 'apple-touch-icon',
         href: '/apple-touch-icon-180x180.png'
@@ -53,6 +55,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  useRegisterServiceWorker();
   return (
     <RootDocument>
       <Outlet />
