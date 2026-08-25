@@ -29,9 +29,8 @@ const serwist = new Serwist({
   // lifetime
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
 
-  disableDevLogs: import.meta.env.NODE_ENV === 'production',
+  disableDevLogs: process.env.NODE_ENV === 'production',
   // cache
   cacheId: 'cf22-cache',
 
@@ -57,7 +56,7 @@ const serwist = new Serwist({
     ];
 
     // cache index.html on runtime because tanstack start generates prerendered html later and I can't find a way to start the sw plugin after prerender
-    if (import.meta.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production') {
       cachingArr.push({
         matcher: ({ request, url }) =>
           request.mode === 'navigate' && url.pathname === '/',
