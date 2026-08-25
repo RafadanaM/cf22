@@ -38,6 +38,14 @@ function CircleProvider({ children }: PropsWithChildren<{}>) {
       throw new Error('failed to fetch circle data');
     }
 
+    // TODO: Remove this once BE returns sampleWorks
+    const updatedCircles = res.data.circles.map((c) => ({
+      ...c,
+      sampleWorks: []
+    }));
+
+    res.data.circles = updatedCircles;
+
     return res.data;
   }, []);
 
