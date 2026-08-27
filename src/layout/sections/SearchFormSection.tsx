@@ -7,17 +7,21 @@ import {
   startTransition
 } from 'react';
 
-import { debounce } from '@/core/utils/scheduler';
+import { useMediaQuery } from '@/core/hooks/useMediaQuery';
+import { debounce, interactionResponse, yieldToMain } from '@/core/utils/scheduler';
 import DynamicSearchBar from '@/features/search/components/DynamicSearchBar';
 import { useSearchForm } from '@/features/search/contexts/SearchFormProvider';
 import { APP_DRAWER_ID, useAppDrawer } from '@/layout/drawers/useAppDrawer';
+import { useNavigationTab } from '../navigation/navigation';
 
 const SearchResult = lazy(() => import('@/features/search/components/SearchResult'));
 
 function SearchFormSection() {
+  const matches = useMediaQuery('(min-width: 48rem)');
   const [keyword, setKeyword] = useState('');
   const [autocompleteKeyword, setAutocompleteKeyword] = useState('');
   const [isPending, startKeywordTransition] = useTransition();
+  const { setTab } = useNavigationTab();
 
   const { isOpen, setIsOpen } = useSearchForm();
   const { closeDrawer } = useAppDrawer();
@@ -30,13 +34,20 @@ function SearchFormSection() {
     setAutocompleteKeyword('');
   }, [setIsOpen]);
 
-  const handleFocus = useCallback(() => {
+  const handleFocus = useCallback(async () => {
     startTransition(() => {
       setIsOpen(true);
     });
 
+    await interactionResponse();
+
+    startTransition(() => {
+      setTab('MAP');
+    });
+
+    await yieldToMain();
     closeDrawer(APP_DRAWER_ID.CIRCLE_DETAIL);
-  }, [closeDrawer, setIsOpen]);
+  }, [closeDrawer, setIsOpen, setTab]);
 
   const handleAutocompleteKeywordChange = useMemo(() => {
     return debounce((inputStr: string) => {
@@ -56,7 +67,7 @@ function SearchFormSection() {
 
   return (
     <>
-      {isOpen && (
+      {isOpen && matches && (
         <div
           className="pointer-events-auto fixed top-0 bottom-0 left-0 right-0 bg-card-foreground/20 backdrop-blur-lg hidden md:block cursor-pointer"
           onClick={handleClose}

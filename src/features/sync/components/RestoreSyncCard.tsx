@@ -11,6 +11,7 @@ import {
 } from '@/core/ui/components/input-group';
 import { Spinner } from '@/core/ui/components/spinner';
 import { useToast } from '@/core/ui/components/toast/ToastProvider';
+import { yieldToMain } from '@/core/utils/scheduler';
 import { useBookmarkActions } from '@/domain/bookmark/contexts/BookmarkFormProvider';
 import useRestoreBookmarkAPI from '@/domain/bookmark/hooks/useRestoreBookmarkAPI';
 
@@ -22,6 +23,7 @@ function RestoreSyncCard() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isValid }
   } = useForm<FormFields>({
     defaultValues: {
@@ -40,14 +42,16 @@ function RestoreSyncCard() {
       { id: data.syncCode },
 
       {
-        onSuccess: (result) => {
+        onSuccess: async (result) => {
+          startTransition(() => {
+            resetBookmark(result);
+          });
+          reset();
+
+          await yieldToMain();
           showToast({
             title: 'Bookmark Restored!',
             description: 'Check your bookmarks page'
-          });
-
-          startTransition(() => {
-            resetBookmark(result);
           });
         },
         onError: (e) => {

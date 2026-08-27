@@ -5,7 +5,7 @@ import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import { tanstackSerwistPlugin } from './src/core/plugins/tanstackSerwistPlugin.ts';
 
-const isDev = process.env.NODE_ENV === 'development';
+const isProd = process.env.NODE_ENV === 'production';
 
 const config = defineConfig(() => ({
   resolve: {
@@ -25,7 +25,8 @@ const config = defineConfig(() => ({
         autoStaticPathsDiscovery: true
       }
     }),
-    isDev ? undefined : nitro({ preset: 'bun' }),
+    isProd ? nitro({ preset: 'bun' }) : undefined,
+
     viteReact(),
     tanstackSerwistPlugin()
   ]

@@ -41,7 +41,6 @@ function SearchResult({ keyword, isLoading }: SearchResultProps) {
   const hasResult = deferredResult.length > 0;
 
   const showLoading = isLoading || deferredResult !== result;
-  const showEmpty = !hasResult && keyword.length > 0;
 
   return (
     <div
@@ -50,7 +49,7 @@ function SearchResult({ keyword, isLoading }: SearchResultProps) {
       )}
     >
       <div className={cn('h-full', showLoading ? 'opacity-50' : 'opacity-100')}>
-        {showEmpty && (
+        {!hasResult && (
           <div className="p-2">
             <div className={cn('p-2 rounded-lg gap-1.5')}>
               <p className="text-center text-primary font-medium text-md">

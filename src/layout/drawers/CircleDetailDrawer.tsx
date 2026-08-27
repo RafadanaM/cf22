@@ -177,6 +177,7 @@ function SampleWorks({ sampleWorks }: SampleWorksProps) {
             <img
               src={sampleWorkUrl}
               alt={`sample work ${idx + 1}`}
+              loading="lazy"
               className="size-16 object-cover hover:brightness-75 active:brightness-75"
               width={64}
               height={64}

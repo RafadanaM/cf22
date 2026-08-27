@@ -35,7 +35,7 @@ function SearchBar({ keyword, isFocused, onFocus, onChange }: SearchBarProps) {
         id="search-form"
         name="search-form"
         onFocus={onFocus}
-        placeholder="Search Circle Name, Location, and Fandom"
+        placeholder="Search Name, Code, or Fandom"
         autoComplete={'off'}
         value={keyword}
         onChange={(e) => onChange(e.target.value)}
