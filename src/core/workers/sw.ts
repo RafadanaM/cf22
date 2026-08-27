@@ -3,8 +3,7 @@ import {
   CacheableResponsePlugin,
   ExpirationPlugin,
   NetworkFirst,
-  Serwist,
-  StaleWhileRevalidate
+  Serwist
 } from 'serwist';
 
 declare global {
@@ -39,16 +38,17 @@ const serwist = new Serwist({
     const cachingArr: RuntimeCaching[] = [
       {
         matcher: ({ url }) => url.pathname.includes('/api/v1/circles'),
-        handler: new StaleWhileRevalidate({
+        handler: new NetworkFirst({
           cacheName: 'circles-response',
-
+          networkTimeoutSeconds: 3,
           plugins: [
             new CacheableResponsePlugin({
               statuses: [200]
             }),
             new ExpirationPlugin({
-              maxEntries: 10,
-              maxAgeSeconds: 7 * 24 * 60 * 60 // 7 Days,
+              maxEntries: 30,
+              maxAgeSeconds: 7 * 24 * 60 * 60, // 7 Days,
+              purgeOnQuotaError: true
             })
           ]
         })
@@ -58,10 +58,10 @@ const serwist = new Serwist({
     // cache index.html on runtime because tanstack start generates prerendered html later and I can't find a way to start the sw plugin after prerender
     if (process.env.NODE_ENV === 'production') {
       cachingArr.push({
-        matcher: ({ request, url }) =>
-          request.mode === 'navigate' && url.pathname === '/',
+        matcher: ({ request }) => request.mode === 'navigate',
         handler: new NetworkFirst({
           cacheName: 'html-cache',
+          networkTimeoutSeconds: 3,
           plugins: [
             {
               cacheWillUpdate: async ({ response }) => {
