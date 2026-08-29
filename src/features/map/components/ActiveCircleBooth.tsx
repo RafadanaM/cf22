@@ -22,8 +22,9 @@ function ActiveCircleBooth() {
 
   return (
     <Pane name="highlight-pane" style={{ zIndex: 500, pointerEvents: 'none' }}>
-      <BoothRectangle circle={circle} isActive />
+      <BoothRectangle circle={circle} isActive pane="highlight-pane" />
       <SVGOverlay
+        pane="highlight-pane"
         bounds={bounds}
         attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}` }}
       >

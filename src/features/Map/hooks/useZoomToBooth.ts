@@ -5,7 +5,7 @@ import { Circle } from '@/domain/circle/types';
 import { APP_DRAWER_ID, useAppDrawer } from '@/layout/drawers/useAppDrawer';
 import { useNavigationTab } from '@/layout/navigation/navigation';
 
-import { useActiveCircle } from '../contexts/ActiveCircleProvider';
+import { useActiveCircleAction } from '../contexts/ActiveCircleProvider';
 import { useCircleFilter } from '../contexts/CircleFilterProvider';
 import { useMapControl } from '../contexts/MapProvider';
 import { boothToBounds } from '../utils/map';
@@ -15,7 +15,7 @@ function useZoomToBooth() {
 
   const { openDrawer } = useAppDrawer();
   const { setTab } = useNavigationTab();
-  const { setActiveCircleId } = useActiveCircle();
+  const { setActiveCircleId } = useActiveCircleAction();
   const { setAttendingDay } = useCircleFilter();
 
   const zoomToBooth = useCallback(

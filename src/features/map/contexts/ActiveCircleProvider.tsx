@@ -4,11 +4,17 @@ import { CircleId } from '@/domain/circle/types';
 
 type ActiveCircleProviderContextValue = {
   activeCircleId: CircleId;
+};
+
+type ActiveCircleProviderContextActionValue = {
   setActiveCircleId: (circleId: CircleId) => void;
 };
 
-const ActiveCircleContext = createContext<ActiveCircleProviderContextValue>({
-  activeCircleId: '',
+const ActiveCircleValueContext = createContext<ActiveCircleProviderContextValue>({
+  activeCircleId: ''
+});
+
+const ActiveCircleActionContext = createContext<ActiveCircleProviderContextActionValue>({
   setActiveCircleId: (_circleId: CircleId) => {
     // noop
   }
@@ -19,19 +25,41 @@ function ActiveCircleProvider({ children }: PropsWithChildren<{}>) {
 
   const value = useMemo(
     () => ({
-      activeCircleId,
-      setActiveCircleId
+      activeCircleId
     }),
     [activeCircleId]
   );
 
-  return <ActiveCircleContext value={value}>{children}</ActiveCircleContext>;
+  const actions = useMemo(
+    () => ({
+      setActiveCircleId
+    }),
+    []
+  );
+
+  return (
+    <ActiveCircleActionContext.Provider value={actions}>
+      <ActiveCircleValueContext.Provider value={value}>
+        {children}
+      </ActiveCircleValueContext.Provider>
+    </ActiveCircleActionContext.Provider>
+  );
 }
 
 export default ActiveCircleProvider;
 
+export const useActiveCircleAction = () => {
+  const ctx = useContext(ActiveCircleActionContext);
+
+  if (!ctx) {
+    throw new Error('useActiveCircleAction must be used within ActiveCircleProvider');
+  }
+
+  return ctx;
+};
+
 export const useActiveCircle = () => {
-  const ctx = useContext(ActiveCircleContext);
+  const ctx = useContext(ActiveCircleValueContext);
 
   if (!ctx) {
     throw new Error('useActiveCircle must be used within ActiveCircleProvider');

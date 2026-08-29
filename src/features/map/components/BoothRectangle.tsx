@@ -8,12 +8,12 @@ import { memo, startTransition, useMemo, useRef } from 'react';
 import { Rectangle } from 'react-leaflet/Rectangle';
 import { Tooltip } from 'react-leaflet/Tooltip';
 
+import { cn } from '@/core/ui/utils';
+import { interactionResponse } from '@/core/utils/scheduler';
 import { Circle } from '@/domain/circle/types';
 import { useAppDrawer, APP_DRAWER_ID } from '@/layout/drawers/useAppDrawer';
 
-import { cn } from '@/core/ui/utils';
-import { interactionResponse } from '@/core/utils/scheduler';
-import { useActiveCircle } from '../contexts/ActiveCircleProvider';
+import { useActiveCircleAction } from '../contexts/ActiveCircleProvider';
 import { boothToBounds } from '../utils/map';
 
 interface BoothRectangleProps {
@@ -36,8 +36,9 @@ function BoothRectangle({
   pane
 }: BoothRectangleProps) {
   const rectangleRef = useRef<LeafletRectangle | null>(null);
+  // IT IS IMPORTANT TO KEEP THESE HOOKS CONSISTENT ACCROSS RENDERS
   const { openDrawer } = useAppDrawer();
-  const { setActiveCircleId } = useActiveCircle();
+  const { setActiveCircleId } = useActiveCircleAction();
 
   const { backgroundColor, backgroundColorHover, borderColor } = getColorConfig(
     circle,
@@ -57,6 +58,7 @@ function BoothRectangle({
           circle,
           hideOverlay: true,
           onClose: () => {
+            console.log('RUN');
             startTransition(() => {
               setActiveCircleId('');
             });
@@ -90,7 +92,6 @@ function BoothRectangle({
   return (
     <Rectangle
       ref={rectangleRef}
-      key={circle.id}
       eventHandlers={eventHandlers}
       bounds={bounds}
       pathOptions={pathOptions}

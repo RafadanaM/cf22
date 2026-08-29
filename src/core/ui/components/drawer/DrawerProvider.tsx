@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   ComponentProps,
@@ -19,6 +19,7 @@ import { createPortal } from 'react-dom';
 
 import { Spinner } from '@/core/ui/components/spinner';
 
+import { interactionResponse } from '@/core/utils/scheduler';
 import Drawer from './Drawer';
 import { DrawerComponents, DrawerId, DrawerRegistry } from './DrawerRegistry';
 
@@ -58,6 +59,7 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
   const [trays, setDrawers] = useState<DrawerInstance<Id, Components>[]>([]);
   const navigate = useNavigate();
   const { hash } = useLocation();
+  const { history } = useRouter();
 
   const drawers = useRef(trays);
 
@@ -99,8 +101,11 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
       });
 
       if (!shouldNavigate) return;
-      navigate({
-        hash: id
+
+      interactionResponse().then(() => {
+        navigate({
+          hash: id
+        });
       });
     },
     [navigate]
@@ -108,56 +113,54 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 
   const closeDrawer = useCallback(
     (id: Id) => {
-      let nextHash: undefined | string;
-      let closeFn: undefined | Function;
+      const idx = drawers.current.findIndex((drawer) => drawer.id === id);
+
+      if (idx < 0) return;
+
+      const onClose = drawers.current[idx]?.options?.onClose;
+
+      const isTop = idx === drawers.current.length - 1;
+
+      if (isTop) {
+        history.back();
+
+        interactionResponse().then(() => {
+          onClose?.();
+        });
+        return;
+      }
 
       const nextDrawers = drawers.current.reduce<DrawerInstance<Id, Components>[]>(
         (acc, drawer) => {
           if (drawer.id !== id) {
             acc.push(drawer);
-          } else {
-            closeFn = drawer.options?.onClose;
           }
           return acc;
         },
         []
       );
-      nextHash = nextDrawers.length ? nextDrawers[nextDrawers.length - 1]?.id : undefined;
 
-      if (closeFn) {
-        closeFn();
+      const nextHash = nextDrawers.length
+        ? nextDrawers[nextDrawers.length - 1]?.id
+        : undefined;
+
+      if (nextHash) {
+        navigate({
+          hash: nextHash,
+          replace: true
+        });
+
+        interactionResponse().then(() => {
+          onClose?.();
+        });
       }
-
-      navigate({
-        hash: nextHash,
-        replace: true
-      });
     },
-    [navigate]
+    [history, navigate]
   );
 
   const closeTopDrawer = useCallback(() => {
-    let newHash: string | undefined = undefined;
-    let closeFn: undefined | Function;
-    setDrawers((prev) => {
-      if (prev.length === 0) return prev;
-
-      closeFn = prev.at(-1)?.options?.onClose;
-      const nextDrawers = prev.slice(0, -1);
-      newHash = nextDrawers[nextDrawers.length - 1]?.id;
-
-      return nextDrawers;
-    });
-
-    if (closeFn) {
-      closeFn();
-    }
-
-    navigate({
-      hash: newHash,
-      replace: true
-    });
-  }, [navigate]);
+    history.back();
+  }, [history]);
 
   useEffect(() => {
     if (!currentHash) {
@@ -169,13 +172,15 @@ function DrawerProvider<Id extends DrawerId, Components extends DrawerComponents
 
     if (currentHash) {
       // only update state when go back, opening may require props
-      setDrawers((prev) => {
-        const idx = prev.findIndex((d) => d.id === currentHash);
-        if (idx === -1) return prev;
+      startTransition(() => {
+        setDrawers((prev) => {
+          const idx = prev.findIndex((d) => d.id === currentHash);
+          if (idx === -1) return prev;
 
-        const x = prev.slice(0, idx + 1);
+          const x = prev.slice(0, idx + 1);
 
-        return x;
+          return x;
+        });
       });
     }
   }, [currentHash, drawerIds]);

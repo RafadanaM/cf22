@@ -56,6 +56,7 @@ function SampleWorksDrawer({ works, startingItemKey, close }: SampleWorksDrawerP
     () =>
       debounce((entries: IntersectionObserverEntry[]) => {
         entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
           const itemKey = entry.target.getAttribute('data-item-key');
           if (!itemKey) return;
           setActiveItem(itemKey);
