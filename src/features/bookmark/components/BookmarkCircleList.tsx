@@ -1,6 +1,6 @@
 import uFuzzy from '@leeoniya/ufuzzy';
 import { AnimatePresence } from 'motion/react';
-import { memo, useDeferredValue, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 import { Circle } from '@/domain/circle/types';
@@ -51,9 +51,7 @@ function BookmarkedCircleList({ keyword = '' }: BookmarkedCircleListProps) {
     return order.map((i) => bookmarkItems[info.idx[i]!]!);
   }, [keyword, keyedBookmarkItems, bookmarkItems]);
 
-  const items = useDeferredValue(result);
-
-  if (items.length === 0) {
+  if (result.length === 0) {
     return (
       <div className="flex flex-col gap-2 bg-card rounded-xl border border-border p-4">
         <p className="font-semibold text-center">{'You have no Circles Bookmarked'}</p>
@@ -68,7 +66,7 @@ function BookmarkedCircleList({ keyword = '' }: BookmarkedCircleListProps) {
   return (
     <div className={'flex flex-col gap-2 pb-20 scrollbar-thin'}>
       <AnimatePresence>
-        <BookmarkCards circles={items} />
+        <BookmarkCards circles={result} />
       </AnimatePresence>
     </div>
   );

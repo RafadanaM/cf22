@@ -19,27 +19,30 @@ function BookmarkedCircleBooths() {
   const { attendingDay } = useCircleFilter();
   const { highlightBookmarkedCircles } = useHighlightBookmarkedCircles();
 
+  const deferredBookmarks = useDeferredValue(bookmarks);
+
   const renderedItems = useMemo(
     () =>
-      bookmarks.reduce<{ circle: Circle; isCompleted: boolean }[]>((acc, curr) => {
-        const circle = getCircleDetail(curr.id);
+      deferredBookmarks.reduce<{ circle: Circle; isCompleted: boolean }[]>(
+        (acc, curr) => {
+          const circle = getCircleDetail(curr.id);
 
-        if (circle?.attendingDays.includes(attendingDay)) {
-          acc.push({ circle, isCompleted: curr.isComplete });
-        }
+          if (circle?.attendingDays.includes(attendingDay)) {
+            acc.push({ circle, isCompleted: curr.isComplete });
+          }
 
-        return acc;
-      }, []),
-    [getCircleDetail, bookmarks, attendingDay]
+          return acc;
+        },
+        []
+      ),
+    [getCircleDetail, deferredBookmarks, attendingDay]
   );
 
-  const deferredRenderedItems = useDeferredValue(renderedItems);
-
-  if (deferredRenderedItems.length === 0) return null;
+  if (renderedItems.length === 0) return null;
 
   return (
     <Pane name="bookmarked-circle-booths" style={{ zIndex: 475, pointerEvents: 'none' }}>
-      {deferredRenderedItems.map(({ circle, isCompleted }) => (
+      {renderedItems.map(({ circle, isCompleted }) => (
         <BoothRectangle
           key={circle.id}
           circle={circle}
@@ -53,7 +56,7 @@ function BookmarkedCircleBooths() {
         bounds={bounds}
         attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}` }}
       >
-        {deferredRenderedItems.map(({ circle }) => (
+        {renderedItems.map(({ circle }) => (
           <CircleCodeText key={circle.id} circle={circle} isActive />
         ))}
       </SVGOverlay>

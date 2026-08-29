@@ -56,7 +56,11 @@ function BoothRectangle({
         openDrawer(APP_DRAWER_ID.CIRCLE_DETAIL, {
           circle,
           hideOverlay: true,
-          onClose: () => setActiveCircleId('')
+          onClose: () => {
+            startTransition(() => {
+              setActiveCircleId('');
+            });
+          }
         });
       },
       mouseover: () => {
@@ -95,13 +99,13 @@ function BoothRectangle({
       {isHighlighted && (
         <Tooltip
           direction="top"
+          sticky
           offset={tooltipOffset}
           permanent
           className={cn(
             'flex flex-col ',
             isBookmarkComplete ? 'bg-secondary! border-muted!' : ''
           )}
-          pane="bookmarked-circle-booths"
         >
           <span className="text-sm font-bold">{circle.code}</span>
           <span className="text-xs font-medium">{circle.name}</span>

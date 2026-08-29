@@ -26,15 +26,14 @@ function DynamicSearchBar({
         isFocused ? 'bg-card shadow-xl' : 'bg-card/0 pointer-events-none'
       )}
     >
-      {!isFocused && (
-        <motion.h1
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="flex -mt-1.5 text-center self-center font-semibold text-white bg-primary py-1 px-3 rounded-full shadow-2xl shadow-primary"
-        >
-          {'CF 22 Interactive Map'}
-        </motion.h1>
-      )}
+      <h1
+        className={cn(
+          '-mt-1.5 text-center self-center font-semibold text-white bg-primary py-1 px-3 rounded-full shadow-2xl shadow-primary',
+          isFocused ? 'hidden' : 'flex'
+        )}
+      >
+        {'CF 22 Interactive Map'}
+      </h1>
       <div className="flex items-center gap-2 w-full max-w-2xl">
         <SearchBar
           keyword={keyword}

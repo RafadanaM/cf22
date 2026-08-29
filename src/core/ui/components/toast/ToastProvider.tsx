@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { nanoid } from 'nanoid';
 import {
   createContext,
   PropsWithChildren,
@@ -40,7 +39,7 @@ function ToastProvider({ children }: PropsWithChildren<{}>) {
   }, []);
 
   const showToast = useCallback(({ timeoutMs = 3000, ...rest }: ToastConfig) => {
-    const id = nanoid();
+    const id = crypto.randomUUID();
 
     showToasts((prev) => [...prev, { ...rest, id, timeoutMs }]);
 
@@ -61,7 +60,10 @@ function ToastProvider({ children }: PropsWithChildren<{}>) {
       {children}
       {mounted &&
         createPortal(
-          <div id="toast-root" className="flex flex-col-reverse">
+          <div
+            id="toast-root"
+            className="flex fixed top-0 w-full flex-col-reverse overflow-visible z-50"
+          >
             <AnimatePresence>
               {toasts.map((toast, idx) => (
                 <MotionToast

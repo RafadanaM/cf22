@@ -45,9 +45,9 @@ function ExpoMap() {
               bounds={bounds}
               ref={handleImageOverlay}
             />
-            <CircleBoothMap />
-            <BookmarkedCircleBooths />
             <ActiveCircleBooth />
+            <BookmarkedCircleBooths />
+            <CircleBoothMap />
           </MapContainer>
         </div>
       </div>

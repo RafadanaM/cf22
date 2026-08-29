@@ -21,7 +21,7 @@ const MotionInputGroup = motion.create(InputGroup);
 function SearchBar({ keyword, isFocused, onFocus, onChange }: SearchBarProps) {
   return (
     <MotionInputGroup
-      layout="position"
+      layout={'position'}
       className={cn(
         'h-12 rounded-full bg-card pointer-events-auto',
         isFocused ? 'shadow-none' : 'shadow-xl'
@@ -34,8 +34,8 @@ function SearchBar({ keyword, isFocused, onFocus, onChange }: SearchBarProps) {
       <InputGroupInput
         id="search-form"
         name="search-form"
-        onFocus={onFocus}
-        placeholder="Search Name, Code, or Fandom"
+        onClick={onFocus}
+        placeholder="Search by Name, Code, or Fandom"
         autoComplete={'off'}
         value={keyword}
         onChange={(e) => onChange(e.target.value)}

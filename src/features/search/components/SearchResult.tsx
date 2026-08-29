@@ -1,6 +1,6 @@
 import uFuzzy from '@leeoniya/ufuzzy';
-import { memo, useDeferredValue, useMemo } from 'react';
-import { VList } from 'virtua';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { memo, useCallback, useDeferredValue, useMemo, useRef } from 'react';
 
 import { cn } from '@/core/ui/utils';
 
@@ -21,9 +21,11 @@ const uf = new uFuzzy({
 function SearchResult({ keyword, isLoading }: SearchResultProps) {
   const { circles, searchableCircles } = useCircle();
 
+  const deferredKeyword = useDeferredValue(keyword);
+
   // holy shit ufuzzy is fkin fast
   const result: Circle[] = useMemo(() => {
-    const query = keyword.trim();
+    const query = deferredKeyword.trim();
     if (!query) return circles;
 
     const idxs = uf.filter(searchableCircles, query);
@@ -35,12 +37,11 @@ function SearchResult({ keyword, isLoading }: SearchResultProps) {
     const order = uf.sort(info, searchableCircles, query);
 
     return order.map((i) => circles[info.idx[i]!]!);
-  }, [circles, keyword, searchableCircles]);
+  }, [circles, deferredKeyword, searchableCircles]);
 
-  const deferredResult = useDeferredValue(result);
-  const hasResult = deferredResult.length > 0;
+  const showLoading = isLoading || deferredKeyword !== keyword;
 
-  const showLoading = isLoading || deferredResult !== result;
+  const hasResult = result.length > 0;
 
   return (
     <div
@@ -48,7 +49,12 @@ function SearchResult({ keyword, isLoading }: SearchResultProps) {
         'fixed top-20 left-0 right-0 bottom-0 md:bottom-auto overflow-hidden md:right-auto md:left-1/2 md:-translate-x-1/2  bg-secondary border-t border-boder origin-top md:w-full md:max-w-2xl md:h-4/5'
       )}
     >
-      <div className={cn('h-full', showLoading ? 'opacity-50' : 'opacity-100')}>
+      <div
+        className={cn(
+          'h-full flex flex-col contain-strict overflow-y-auto',
+          showLoading ? 'opacity-50' : 'opacity-100'
+        )}
+      >
         {!hasResult && (
           <div className="p-2">
             <div className={cn('p-2 rounded-lg gap-1.5')}>
@@ -58,7 +64,7 @@ function SearchResult({ keyword, isLoading }: SearchResultProps) {
             </div>
           </div>
         )}
-        {hasResult && <CircleCards circlesResult={deferredResult} />}
+        {hasResult && <CircleCards circlesResult={result} />}
       </div>
     </div>
   );
@@ -70,9 +76,46 @@ interface CircleCardsProps {
 }
 
 const CircleCards = memo(({ circlesResult }: CircleCardsProps) => {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const getItemKey = useCallback(
+    (index: number) => {
+      const circle = circlesResult[index];
+      if (!circle) return String(index);
+
+      return `${circle.code}-${circle.name}`;
+    },
+    [circlesResult]
+  );
+
+  const estimateSize = useCallback(() => 128, []);
+
+  // oxlint-disable-next-line react/incompatible-library
+  const virtualizer = useVirtualizer({
+    count: circlesResult.length,
+    getScrollElement: () => parentRef.current,
+    getItemKey,
+    estimateSize,
+    directDomUpdates: true,
+    gap: 8,
+    paddingStart: 8,
+    paddingEnd: 8
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
   return (
-    <VList role="list" className="p-2 scrollbar-thin" data={circlesResult}>
-      {(circle) => <CircleCard key={circle.id} className="my-1" circle={circle} />}
-    </VList>
+    <div ref={parentRef} className="flex-1 overflow-y-auto">
+      <ul ref={virtualizer.containerRef} className="relative">
+        {virtualItems.map(({ key, index }) => (
+          <li
+            key={key}
+            ref={virtualizer.measureElement}
+            data-index={index}
+            className="absolute w-full px-2"
+          >
+            <CircleCard circle={circlesResult[index]!} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 });
