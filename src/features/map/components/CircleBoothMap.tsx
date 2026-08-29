@@ -10,7 +10,7 @@ import CircleBooths from './CircleBooths';
 function CircleMap() {
   // Always render circle booths that exists both days, switch that's either
   return (
-    <Pane name="all-booths" style={{ zIndex: 500, pointerEvents: 'none' }}>
+    <Pane name="all-booths" style={{ zIndex: 500 }}>
       <BothDaysCircleBooths />
       <BothDaysCircleBoothsLables />
       <EitherDaysCircles />

@@ -58,7 +58,6 @@ function BoothRectangle({
           circle,
           hideOverlay: true,
           onClose: () => {
-            console.log('RUN');
             startTransition(() => {
               setActiveCircleId('');
             });
@@ -96,6 +95,7 @@ function BoothRectangle({
       bounds={bounds}
       pathOptions={pathOptions}
       fillOpacity={1}
+      className="pointer-events-auto"
     >
       {isHighlighted && (
         <Tooltip
