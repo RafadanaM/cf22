@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { QueryStatus, useQuery } from '@tanstack/react-query';
 import {
   createContext,
   PropsWithChildren,
@@ -16,6 +16,7 @@ interface CircleContextValue {
   dayTwoCircles: Circle[];
   bothDaysCircles: Circle[];
   searchableCircles: string[];
+  status: QueryStatus;
   getCircleDetail: (circleId: CircleId) => Circle | undefined;
 }
 
@@ -25,6 +26,7 @@ const CircleContext = createContext<CircleContextValue>({
   dayTwoCircles: [],
   bothDaysCircles: [],
   searchableCircles: [],
+  status: 'pending',
   getCircleDetail: (_circleId: CircleId) => {
     // noop
   }
@@ -41,7 +43,7 @@ function CircleProvider({ children }: PropsWithChildren<{}>) {
     return res.data;
   }, []);
 
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, status } = useQuery({
     queryKey: ['circles'],
     queryFn
   });
@@ -99,7 +101,8 @@ function CircleProvider({ children }: PropsWithChildren<{}>) {
       dayTwoCircles,
       searchableCircles,
       getCircleDetail,
-      isFetching
+      isFetching,
+      status
     }),
     [
       getCircleDetail,
@@ -108,7 +111,8 @@ function CircleProvider({ children }: PropsWithChildren<{}>) {
       dayTwoCircles,
       dayOneCircles,
       bothDaysCircles,
-      searchableCircles
+      searchableCircles,
+      status
     ]
   );
 
