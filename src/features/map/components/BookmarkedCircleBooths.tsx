@@ -1,5 +1,4 @@
 import { useDeferredValue, useMemo } from 'react';
-import { Pane } from 'react-leaflet/Pane';
 import { SVGOverlay } from 'react-leaflet/SVGOverlay';
 
 import { useBookmarkList } from '@/domain/bookmark/contexts/BookmarkFormProvider';
@@ -41,7 +40,7 @@ function BookmarkedCircleBooths() {
   if (renderedItems.length === 0) return null;
 
   return (
-    <Pane name="bookmarked-circle-booths" style={{ zIndex: 600, pointerEvents: 'none' }}>
+    <>
       {renderedItems.map(({ circle, isCompleted }) => (
         <BoothRectangle
           key={circle.id}
@@ -49,20 +48,20 @@ function BookmarkedCircleBooths() {
           isBookmarked
           isHighlighted={highlightBookmarkedCircles}
           isBookmarkComplete={isCompleted}
-          pane="bookmarked-circle-booths"
+          pane="bookmarks"
         />
       ))}
 
       <SVGOverlay
         bounds={bounds}
-        pane="bookmarked-circle-booths"
         attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}` }}
+        pane="bookmarks"
       >
         {renderedItems.map(({ circle }) => (
           <CircleCodeText key={circle.id} circle={circle} isActive />
         ))}
       </SVGOverlay>
-    </Pane>
+    </>
   );
 }
 

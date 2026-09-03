@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef
 } from 'react';
+import { bounds as mapBounds } from '../constants/map';
 
 type MapRegistryContextValue = {
   register: (target: L.Map | null) => void;
@@ -34,6 +35,7 @@ function MapProvider({ children }: PropsWithChildren<{}>) {
 
   const register = useCallback((map: L.Map | null) => {
     mapRef.current = map;
+    map?.fitBounds(mapBounds);
   }, []);
 
   const zoomToPoint = useCallback((bounds: L.LatLngBoundsExpression) => {

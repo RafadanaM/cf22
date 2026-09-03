@@ -100,13 +100,9 @@ function BoothRectangle({
       {isHighlighted && (
         <Tooltip
           direction="top"
-          sticky
           offset={tooltipOffset}
           permanent
-          className={cn(
-            'flex flex-col ',
-            isBookmarkComplete ? 'bg-secondary! border-muted!' : ''
-          )}
+          className={cn('flex flex-col', isBookmarkComplete ? 'brightness-80' : '')}
         >
           <span className="text-sm font-bold">{circle.code}</span>
           <span className="text-xs font-medium">{circle.name}</span>

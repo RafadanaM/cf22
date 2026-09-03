@@ -22,9 +22,6 @@ function useZoomToBooth() {
     async (circle: Circle) => {
       startTransition(() => {
         setTab('MAP');
-      });
-
-      startTransition(() => {
         setActiveCircleId(circle.id);
       });
 

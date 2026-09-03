@@ -1,9 +1,8 @@
-import { Pane } from 'react-leaflet/Pane';
 import { SVGOverlay } from 'react-leaflet/SVGOverlay';
 
 import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 
-import { bounds, MAP_HEIGHT, MAP_WIDTH } from '../constants/map';
+import { MAP_HEIGHT } from '../constants/map';
 import { useActiveCircle } from '../contexts/ActiveCircleProvider';
 import { useCircleFilter } from '../contexts/CircleFilterProvider';
 import BoothRectangle from './BoothRectangle';
@@ -21,16 +20,31 @@ function ActiveCircleBooth() {
   if (!circle || !isInAttendingDay) return null;
 
   return (
-    <Pane name="highlight-pane" style={{ zIndex: 500, pointerEvents: 'none' }}>
-      <BoothRectangle circle={circle} isActive pane="highlight-pane" />
+    <>
+      <BoothRectangle circle={circle} isActive pane="active" />
       <SVGOverlay
-        pane="highlight-pane"
-        bounds={bounds}
-        attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}` }}
+        key={circle.id}
+        // oxlint-disable-next-line react-perf/jsx-no-new-array-as-prop
+        bounds={[
+          [MAP_HEIGHT - circle.rect.y, circle.rect.x],
+          [
+            MAP_HEIGHT - circle.rect.y - circle.rect.height,
+            circle.rect.x + circle.rect.width
+          ]
+        ]}
+        attributes={{
+          viewBox: `0 0 ${circle.rect.width} ${circle.rect.height}`
+        }}
+        pane="active"
       >
-        <CircleCodeText circle={circle} isActive />
+        <CircleCodeText
+          circle={circle}
+          isActive
+          offsetX={-circle.rect.x}
+          offsetY={-circle.rect.y}
+        />
       </SVGOverlay>
-    </Pane>
+    </>
   );
 }
 

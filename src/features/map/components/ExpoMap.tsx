@@ -1,7 +1,8 @@
 import L from 'leaflet';
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { ImageOverlay } from 'react-leaflet/ImageOverlay';
 import { MapContainer } from 'react-leaflet/MapContainer';
+import { Pane } from 'react-leaflet/Pane';
 
 import { bounds } from '../constants/map';
 import { useMapRegistry } from '../contexts/MapProvider';
@@ -10,14 +11,12 @@ import BookmarkedCircleBooths from './BookmarkedCircleBooths';
 import CircleBoothMap from './CircleBoothMap';
 
 const renderer = L.canvas({ padding: 0.5 });
-const crs = L.CRS.Simple;
+export const crs = L.extend({}, L.CRS.Simple, {
+  infinite: false
+});
 
 function ExpoMap() {
   const { register } = useMapRegistry();
-
-  const handleImageOverlay = useCallback((overlay: L.ImageOverlay) => {
-    overlay?.getElement()?.setAttribute('fetchpriority', 'high');
-  }, []);
 
   return (
     <section
@@ -31,20 +30,19 @@ function ExpoMap() {
           <MapContainer
             ref={register}
             crs={crs}
-            bounds={bounds}
             maxBounds={bounds}
-            className="w-screen h-screen"
-            minZoom={-1.5}
+            bounds={bounds}
+            style={{ width: '100vw', height: '100vh' }}
+            minZoom={-2}
             maxZoom={2}
             zoomControl={false}
             preferCanvas
             renderer={renderer}
           >
-            <ImageOverlay
-              url="/floor_map.webp"
-              bounds={bounds}
-              ref={handleImageOverlay}
-            />
+            <ImageOverlay url="/floor_map.webp" alt="cf22 map" bounds={bounds} />
+            <Pane name="bookmarks" className="pointer-events-none" />
+            <Pane name="active" className="pointer-events-none" />
+
             <CircleBoothMap />
             <BookmarkedCircleBooths />
             <ActiveCircleBooth />

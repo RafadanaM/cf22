@@ -1,5 +1,4 @@
 import { Activity, memo, useDeferredValue } from 'react';
-import { Pane } from 'react-leaflet/Pane';
 
 import { useCircle } from '@/domain/circle/contexts/CircleProvider';
 
@@ -10,11 +9,11 @@ import CircleBooths from './CircleBooths';
 function CircleMap() {
   // Always render circle booths that exists both days, switch that's either
   return (
-    <Pane name="all-booths" style={{ zIndex: 500 }}>
+    <>
       <BothDaysCircleBooths />
       <BothDaysCircleBoothsLables />
       <EitherDaysCircles />
-    </Pane>
+    </>
   );
 }
 

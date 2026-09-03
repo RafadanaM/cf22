@@ -4,11 +4,18 @@ import { Circle } from '@/domain/circle/types';
 interface CircleCodeTextProps {
   circle: Circle;
   isActive?: boolean;
+  offsetX?: number;
+  offsetY?: number;
 }
 
-function CircleCodeText({ circle, isActive }: CircleCodeTextProps) {
-  const x = circle.rect.x + circle.rect.width / 2;
-  const y = circle.rect.y + circle.rect.height / 2;
+function CircleCodeText({
+  circle,
+  isActive,
+  offsetX = 0,
+  offsetY = 0
+}: CircleCodeTextProps) {
+  const x = offsetX + circle.rect.x + circle.rect.width / 2;
+  const y = offsetY + circle.rect.y + circle.rect.height / 2;
 
   let lines = circle.code.split('/');
 
