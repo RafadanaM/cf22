@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo } from 'react';
+import { useMemo } from 'react';
 import { SVGOverlay } from 'react-leaflet/SVGOverlay';
 
 import { useBookmarkList } from '@/domain/bookmark/contexts/BookmarkFormProvider';
@@ -14,30 +14,26 @@ import CircleCodeText from './CircleCodeText';
 function BookmarkedCircleBooths() {
   const { getCircleDetail } = useCircle();
   const { bookmarks } = useBookmarkList();
+  const { status } = useCircle();
 
   const { attendingDay } = useCircleFilter();
   const { highlightBookmarkedCircles } = useHighlightBookmarkedCircles();
 
-  const deferredBookmarks = useDeferredValue(bookmarks);
-
   const renderedItems = useMemo(
     () =>
-      deferredBookmarks.reduce<{ circle: Circle; isCompleted: boolean }[]>(
-        (acc, curr) => {
-          const circle = getCircleDetail(curr.id);
+      bookmarks.reduce<{ circle: Circle; isCompleted: boolean }[]>((acc, curr) => {
+        const circle = getCircleDetail(curr.id);
 
-          if (circle?.attendingDays.includes(attendingDay)) {
-            acc.push({ circle, isCompleted: curr.isComplete });
-          }
+        if (circle?.attendingDays.includes(attendingDay)) {
+          acc.push({ circle, isCompleted: curr.isComplete });
+        }
 
-          return acc;
-        },
-        []
-      ),
-    [getCircleDetail, deferredBookmarks, attendingDay]
+        return acc;
+      }, []),
+    [getCircleDetail, bookmarks, attendingDay]
   );
 
-  if (renderedItems.length === 0) return null;
+  if (renderedItems.length === 0 || status !== 'success') return null;
 
   return (
     <>
