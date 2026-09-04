@@ -5,12 +5,9 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef
 } from 'react';
-import { useCircle } from '@/domain/circle/contexts/CircleProvider';
-import { bounds as mapBounds } from '../constants/map';
 
 type MapRegistryContextValue = {
   register: (target: L.Map | null) => void;
@@ -35,18 +32,11 @@ const MapRegistryContext = createContext<MapRegistryContextValue>({
 function MapProvider({ children }: PropsWithChildren<{}>) {
   const mapRef = useRef<L.Map | null>(null);
 
-  const { status } = useCircle();
-
-  // reset rendering of items
-  useEffect(() => {
-    if (status === 'success') {
-      mapRef?.current?.invalidateSize();
-    }
-  }, [status]);
-
   const register = useCallback((map: L.Map | null) => {
     mapRef.current = map;
-    map?.fitBounds(mapBounds);
+    map?.setZoom(-1, {
+      animate: false
+    });
   }, []);
 
   const zoomToPoint = useCallback((bounds: L.LatLngBoundsExpression) => {

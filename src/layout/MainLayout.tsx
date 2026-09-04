@@ -21,7 +21,9 @@ function MainLayout() {
           <ExpoMap />
         </ClientOnly>
       </main>
-      <MapConfigs />
+      <Suspense>
+        <MapConfigs />
+      </Suspense>
 
       {/* lazy the content inside instead of the section itself so it immediately appears when opened */}
       <SearchFormSection />
