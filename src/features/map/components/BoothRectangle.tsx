@@ -96,6 +96,7 @@ function BoothRectangle({
       pathOptions={pathOptions}
       fillOpacity={1}
       className="pointer-events-auto"
+      pane={pane}
     >
       {isHighlighted && (
         <Tooltip
