@@ -53,3 +53,11 @@ jobs:
           script: |
             sudo nginx -t
             sudo systemctl reload nginx
+
+      - name: Purge index.html
+        env:
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          chmod +x ./scripts/purge_cache.sh
+          ./scripts/purge_cache.sh
